@@ -2,7 +2,7 @@
 import time
 
 char_styles = {
-    "dots": ".",
+    "dot": ".",
     "hash": "#",
     "star": "*",
     "equal": "=",
@@ -14,6 +14,7 @@ char_styles = {
     "square": "■"
 }
 
+original_chara = "-"
 chara = "█"
 total_iterations = 0
 cur_iteration = 1
@@ -30,7 +31,7 @@ def init():
     cur_iteration = 1
     cur_pos = -1
 
-def animate(*args, char=None, max_char = 100, title="Animation en cours", title_end="Animation terminée"):
+def animate(*args, char=None, max_char = 100, title="Animation en cours", title_end="Animation terminée", original_char="-"):
     """
     animate initie l'animation avec les valeurs donnéees, renvoie le range() si les args sont des nombres sinon renvoie la liste des éléments si c'est une liste
     
@@ -54,6 +55,7 @@ def animate(*args, char=None, max_char = 100, title="Animation en cours", title_
     global start_title
     global end_title
     global start
+    global original_chara
     
     init()
     
@@ -72,6 +74,11 @@ def animate(*args, char=None, max_char = 100, title="Animation en cours", title_
         chara = char
     else:
         chara = char_styles[char]
+    if original_char not in char_styles:
+        original_chara = original_char
+    else:
+        original_chara = char_styles[original_char]
+        
     max_chars = max_char
     start_title = title
     end_title = title_end
@@ -103,16 +110,16 @@ def print_anim():
 
     if cur_iteration == total_iterations:
         p = cur_iteration / total_iterations
-        print(f"\r{chara*int(max_chars*p)+ '-' * (max_chars-int(max_chars*p))} {int(p*100)}%  {end_title} - {int(duree)}s", flush=True)
+        print(f"\r{chara*int(max_chars*p)+ original_chara * (max_chars-int(max_chars*p))} {int(p*100)}%  {end_title} - {int(duree)}s", flush=True)
         return 0
     
     if round(cur_iteration * max_chars / total_iterations) != cur_pos:
         cur_pos += 1
         p = cur_iteration / total_iterations
-        print(f"\r{chara*int(max_chars*p)+ '-' * (max_chars-int(max_chars*p))} {int(p*100)}%  {start_title} - {int(duree)}s {' '*10}", end="", flush=True) # Recouvrir si changement de texte 
+        print(f"\r{chara*int(max_chars*p)+ original_chara * (max_chars-int(max_chars*p))} {int(p*100)}%  {start_title} - {int(duree)}s {' '*10}", end="", flush=True) # Recouvrir si changement de texte 
 
     cur_iteration += 1
 
 if __name__ == "__main__":
-    for i in animate(100000000):
+    for i in animate(50000000, char="circle", original_char="dot"):
         print_anim()

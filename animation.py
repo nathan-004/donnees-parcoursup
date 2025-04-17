@@ -3,8 +3,8 @@ import time
 
 char_styles = {
     "dots": ".",
-    "hashes": "#",
-    "stars": "*",
+    "hash": "#",
+    "star": "*",
     "equal": "=",
     "arrow": "→",
     "block": "█",
@@ -14,7 +14,7 @@ char_styles = {
     "square": "■"
 }
 
-chara = "."
+chara = "█"
 total_iterations = 0
 cur_iteration = 1
 cur_pos = -1
@@ -54,9 +54,9 @@ def animate(*args, char=None, max_char = 100, title="Animation en cours", title_
     global start_title
     global end_title
     global start
-
+    
     init()
-
+    
     size = len(args)
     
     if size == 0:
@@ -81,7 +81,11 @@ def animate(*args, char=None, max_char = 100, title="Animation en cours", title_
         if type(args[0]) == int:
             res = range(args[0])
         else:
-            total_iterations = len(args[0])
+            try:
+                total_iterations = len(args[0])
+            except TypeError:
+                total_iterations = len(list(args[0]))
+                return list(args[0])
             return args[0]
     else:
         if all([type(el) == int for el in args]):
@@ -99,18 +103,16 @@ def print_anim():
 
     if cur_iteration == total_iterations:
         p = cur_iteration / total_iterations
-        print(f"\r{chara*int(max_chars*p)+ "-" * (max_chars-int(max_chars*p))} {int(p*100)}%  {end_title} - {int(duree)}s", flush=True)
+        print(f"\r{chara*int(max_chars*p)+ '-' * (max_chars-int(max_chars*p))} {int(p*100)}%  {end_title} - {int(duree)}s", flush=True)
         return 0
     
     if round(cur_iteration * max_chars / total_iterations) != cur_pos:
         cur_pos += 1
         p = cur_iteration / total_iterations
-        print(f"\r{chara*int(max_chars*p)+ "-" * (max_chars-int(max_chars*p))} {int(p*100)}%  {start_title} - {int(duree)}s", end="", flush=True)
+        print(f"\r{chara*int(max_chars*p)+ '-' * (max_chars-int(max_chars*p))} {int(p*100)}%  {start_title} - {int(duree)}s {' '*10}", end="", flush=True) # Recouvrir si changement de texte 
 
     cur_iteration += 1
 
-for i in animate(75000000, char="square", title="Importer les tables", title_end="Importation des tables terminées"):
-    print_anim()
-
-for i in animate(75000000, char="square", title="Importer les tables", title_end="Importation des tables terminées"):
-    print_anim()
+if __name__ == "__main__":
+    for i in animate(100000000):
+        print_anim()

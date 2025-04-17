@@ -1,9 +1,10 @@
 from csv import DictReader
-import os
 import time
 import folium
 
 from animation import *
+
+default_year = "2024"
 
 def importer_table(fichier):
     with open(fichier, encoding="UTF-8") as f:
@@ -46,6 +47,15 @@ def search_category(inp):
     return res
 
 def donneesV00(T, categories, valeurs, resultats):
+    table = [{res: el[res] for res in resultats} if (any([el[categories[idx]] == valeurs[idx] for idx in range(len(categories))])  or categories == []) else False for el in T]
+    t = []
+
+    for el in table:
+        if el != False:
+             t.append(el)
+    return t
+
+def donneesV10(T, categories, valeurs, resultats):
     """
     Renvoie le tableau contenant les valeurs dans resultats qui respectent une condition valeurs[i] == categories[i]
 
@@ -60,15 +70,7 @@ def donneesV00(T, categories, valeurs, resultats):
     resultats:list
         Categories à renvoyer
     """
-    table = [{res: el[res] for res in resultats} if (any([el[categories[idx]] == valeurs[idx] for idx in range(len(categories))])  or categories == []) else False for el in T]
-    t = []
-
-    for el in table:
-        if el != False:
-             t.append(el)
-    return t
-
-def donneesV10(T, categories, valeurs, resultats):
+    
     t = []
     
     if resultats == []:
@@ -90,7 +92,7 @@ def jointure(table1, table2, categories, resultats):
     return t
 
 def create_popup(line):
-    html = line["Établissement"]
+    html = line["Établissement"] + "-" + line["cod_aff_form"]
     
     return html
 
@@ -112,6 +114,9 @@ def filtrer_localisation(table, categories, values):
     
     return donneesV10(table, new_categories, values, [])
 
+def uniticite(table, category):
+    pass
+
 # Importer toutes les tables dans /ressources + initialiser les variables
 tables = import_all()
 
@@ -127,14 +132,16 @@ print("Nom des catégories", CATEGORIES.keys(), sep=" : ")
 # Chercher dans les categories
 print(search_category("néo"))
 
-print("Nombre de lignes trouvées :", len(donneesV10(tables["parcoursup_2020"], ["\ufeffSession"], ["2020"], ["Statut de l’établissement de la filière de formation (public, privé…)"])))
+print("Nombre de lignes trouvées :", len(donneesV10(tables["parcoursup_"+default_year], ["\ufeffSession"], ["2024"], ["Statut de l’établissement de la filière de formation (public, privé…)"])))
 
 #print(len(jointure(tables["parcoursup_2020"], tables["parcoursup_2019"], ["Code UAI de l'établissement"], ["Établissement"])))
 
-carte = folium.Map(location=[48.8566, 2.3522], zoom_start=5)
+carte = folium.Map(location=[46.8566, 2.3522], zoom_start=7)
 fg = folium.FeatureGroup(name="Icon collection", control=False).add_to(carte)
 
-vienne = filtrer_localisation(tables["parcoursup_2020"], ["région"], ["Nouvelle-Aquitaine"])
+ETABLISSEMENTS = donneesV10(tables["parcoursup_"+default_year])
+
+vienne = filtrer_localisation(tables["parcoursup_"+default_year], ["région", "région", "commune"], ["Normandie", "Bretagne", "Poitiers"])
 
 points_to_cards(vienne, "Coordonnées GPS de la formation")
 folium.LayerControl().add_to(carte)

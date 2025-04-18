@@ -113,12 +113,54 @@ def uniticite(table, category, resultats=[]):
     seen = set()
     new_table = []
     
-    for ligne in table:
+    for ligne in animate(table):
         if ligne[category] not in seen:
             new_table.append({res: ligne[res] for res in resultats})
             seen.add(ligne[category])
+        print_anim()
     
     return new_table
+
+def get_colision(list_of_points):
+    pass
+
+def create_polygon(list_of_points, current_points=[]):
+    # Remettre les points dans l'ordre pour que ça fasse un polygone
+    
+    if not list_of_points:
+        return current_points
+    
+    state = get_colision(current_points)
+    
+    for idx, point in enumerate(list_of_points):
+        result = create_polygon(list_of_points[:idx] + list_of_points[idx+1:], current_points + [point])
+    
+    return list_of_points
+    
+
+def create_zone():
+    locations = create_polygon([
+        [35.6762, 139.7795],
+        [35.6767, 139.7868],
+        [35.6795, 139.7824],
+        [35.6718, 139.7831],
+        [35.6787, 139.7791],
+    ])
+    
+    folium.Polygon(
+        locations=locations,
+        color="blue",
+        weight=6,
+        fill_color="red",
+        fill_opacity=0.5,
+        fill=True,
+        popup="Tokyo, Japan",
+        tooltip="Click me!",
+    ).add_to(carte)
+
+
+def table_to_zone(table, category):
+    pass
 
 # Importer toutes les tables dans /ressources + initialiser les variables
 tables = import_all()
@@ -146,9 +188,13 @@ ETABLISSEMENTS = uniticite(tables["parcoursup_"+default_year], "Code UAI de l'é
 
 #vienne = filtrer_localisation(ETABLISSEMENTS, ["région", "région", "commune"], ["Normandie", "Bretagne", "Poitiers"])
 
-points_to_cards(ETABLISSEMENTS, "Coordonnées GPS de la formation")
+#points_to_cards(ETABLISSEMENTS, "Coordonnées GPS de la formation")
+
+create_zone()
+
 folium.LayerControl().add_to(carte)
 
 carte.save("carte.html")
 
-# https://www.data.gouv.fr/fr/datasets/parcoursup-2023-voeux-de-poursuite-detudes-et-de-reorientation-dans-lenseignement-superieur-et-reponses-des-etablissements/#/resources  \b
+# https://www.data.gouv.fr/fr/datasets/parcoursup-2023-voeux-de-poursuite-detudes-et-de-reorientation-dans-lenseignement-superieur-et-reponses-des-etablissements/#/resources
+# https://stackoverflow.com/questions/59287928/algorithm-to-create-a-polygon-from-points

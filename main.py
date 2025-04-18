@@ -1,6 +1,7 @@
 from csv import DictReader
 import time
 import folium
+import os
 
 from animation import *
 
@@ -45,15 +46,6 @@ def search_category(inp):
             res.append(cat_name)
         
     return res
-
-def donneesV00(T, categories, valeurs, resultats):
-    table = [{res: el[res] for res in resultats} if (any([el[categories[idx]] == valeurs[idx] for idx in range(len(categories))])  or categories == []) else False for el in T]
-    t = []
-
-    for el in table:
-        if el != False:
-             t.append(el)
-    return t
 
 def donneesV10(T, categories, valeurs, resultats):
     """
@@ -114,8 +106,19 @@ def filtrer_localisation(table, categories, values):
     
     return donneesV10(table, new_categories, values, [])
 
-def uniticite(table, category):
-    pass
+def uniticite(table, category, resultats=[]):
+    if resultats == []:
+        resultats = list(table[0].keys())
+    
+    seen = set()
+    new_table = []
+    
+    for ligne in table:
+        if ligne[category] not in seen:
+            new_table.append({res: ligne[res] for res in resultats})
+            seen.add(ligne[category])
+    
+    return new_table
 
 # Importer toutes les tables dans /ressources + initialiser les variables
 tables = import_all()
@@ -139,11 +142,11 @@ print("Nombre de lignes trouvées :", len(donneesV10(tables["parcoursup_"+defaul
 carte = folium.Map(location=[46.8566, 2.3522], zoom_start=7)
 fg = folium.FeatureGroup(name="Icon collection", control=False).add_to(carte)
 
-ETABLISSEMENTS = donneesV10(tables["parcoursup_"+default_year])
+ETABLISSEMENTS = uniticite(tables["parcoursup_"+default_year], "Code UAI de l'établissement")
 
-vienne = filtrer_localisation(tables["parcoursup_"+default_year], ["région", "région", "commune"], ["Normandie", "Bretagne", "Poitiers"])
+#vienne = filtrer_localisation(ETABLISSEMENTS, ["région", "région", "commune"], ["Normandie", "Bretagne", "Poitiers"])
 
-points_to_cards(vienne, "Coordonnées GPS de la formation")
+points_to_cards(ETABLISSEMENTS, "Coordonnées GPS de la formation")
 folium.LayerControl().add_to(carte)
 
 carte.save("carte.html")

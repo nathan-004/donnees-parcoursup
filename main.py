@@ -121,31 +121,43 @@ def uniticite(table, category, resultats=[]):
     
     return new_table
 
-def get_colision(list_of_points):
-    pass
+def orientation(a, b, c):
+    # renvoie >0 si a→b→c tournent à gauche, <0 si à droite
+    return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
 
-def create_polygon(list_of_points, current_points=[]):
-    # Remettre les points dans l'ordre pour que ça fasse un polygone
-    
-    if not list_of_points:
-        return current_points
-    
-    state = get_colision(current_points)
-    
-    for idx, point in enumerate(list_of_points):
-        result = create_polygon(list_of_points[:idx] + list_of_points[idx+1:], current_points + [point])
-    
-    return list_of_points
-    
+def create_polygon(points):
+    # 1. on trie
+    pts = sorted(set(points))
+    if len(pts) <= 1:
+        return pts.copy()
 
-def create_zone():
-    locations = create_polygon([
-        [35.6762, 139.7795],
-        [35.6767, 139.7868],
-        [35.6795, 139.7824],
-        [35.6718, 139.7831],
-        [35.6787, 139.7791],
-    ])
+    # 2. chaîne inférieure
+    lower = []
+    for p in pts:
+        while len(lower) >= 2 and orientation(lower[-2], lower[-1], p) <= 0:
+            lower.pop()
+        lower.append(p)
+
+    # 3. chaîne supérieure
+    upper = []
+    for p in reversed(pts):
+        while len(upper) >= 2 and orientation(upper[-2], upper[-1], p) <= 0:
+            upper.pop()
+        upper.append(p)
+
+    # 4. concatène (sans répéter le premier/dernier)
+    return lower[:-1] + upper[:-1]   
+
+def create_zone(table, location_category, tooltip="Click Me!", popup="Test"):
+    
+    locations = []
+
+    for ligne in table:
+        if not "," in ligne[location_category]:
+            continue
+        locations.append(eval(ligne[location_category]))
+
+    locations = create_polygon(locations)
     
     folium.Polygon(
         locations=locations,
@@ -154,13 +166,22 @@ def create_zone():
         fill_color="red",
         fill_opacity=0.5,
         fill=True,
-        popup="Tokyo, Japan",
-        tooltip="Click me!",
+        popup=popup,
+        tooltip=tooltip,
     ).add_to(carte)
 
 
-def table_to_zone(table, category):
-    pass
+def table_to_zone(table, category, localisation_category="Coordonnées GPS de la formation", exception_values=["", "Etranger"]):
+    localisations = uniticite(table, category, [category]) # Toutes les valeurs de la catégorie
+
+    for ligne in localisations:
+        zone = ligne[category]
+
+        if zone in exception_values:
+            continue
+
+        points = donneesV10(table, [category], [zone], [])
+        create_zone(points, localisation_category, zone)
 
 # Importer toutes les tables dans /ressources + initialiser les variables
 tables = import_all()
@@ -172,10 +193,10 @@ print("Nombre de catégories : ")
 for t_ in tables: # Compter les catégories
     print(t_, len(tables[t_][0]), sep=" : ")
 
-print("Nom des catégories", CATEGORIES.keys(), sep=" : ")
+#print("Nom des catégories", CATEGORIES.keys(), sep=" : ")
 
 # Chercher dans les categories
-print(search_category("néo"))
+print(search_category("région"))
 
 print("Nombre de lignes trouvées :", len(donneesV10(tables["parcoursup_"+default_year], ["\ufeffSession"], ["2024"], ["Statut de l’établissement de la filière de formation (public, privé…)"])))
 
@@ -186,11 +207,10 @@ fg = folium.FeatureGroup(name="Icon collection", control=False).add_to(carte)
 
 ETABLISSEMENTS = uniticite(tables["parcoursup_"+default_year], "Code UAI de l'établissement")
 
-#vienne = filtrer_localisation(ETABLISSEMENTS, ["région", "région", "commune"], ["Normandie", "Bretagne", "Poitiers"])
+vienne = filtrer_localisation(tables["parcoursup_"+default_year], ["région"], ["Nouvelle Aquitaine"])
 
 #points_to_cards(ETABLISSEMENTS, "Coordonnées GPS de la formation")
-
-create_zone()
+table_to_zone(ETABLISSEMENTS, "Département de l’établissement")
 
 folium.LayerControl().add_to(carte)
 

@@ -1,5 +1,4 @@
 from csv import DictReader
-import time
 import folium
 import os
 
@@ -83,19 +82,38 @@ def jointure(table1, table2, categories, resultats):
                  t.append({res: table1[i1][res] if res in table1[i1] else table2[i2][res] for res in resultats})
     return t
 
+def sort(table, category):
+    # Category must be an integer
+
+    return sorted(table, key= lambda x : int(x[category]), reverse=True)
+
 def create_popup(line):
     html = line["Établissement"] + "-" + line["cod_aff_form"]
     
     return html
 
-def points_to_cards(table, category):
+def points_to_cards(table, category, size_category, min_size=5, max_size=35):
+    """
+    size_category:str
+        Categorie devant être un int
+        Définit la taille du marker
+    """
+
+    table_sort = sort(table, size_category)
+    max_, min_ = int(table_sort[0][size_category]), int(table[-1][size_category])
+
     for l in animate(table, title="Placement des points sur la carte", title_end="Points placés", char="block"):
         print_anim()
         if not "," in l[category]:
             continue 
         x, y = eval(l[category])
         pop = create_popup(l.copy())
-        folium.Marker(location=(x, y), popup=pop).add_to(fg)
+
+        folium.CircleMarker(location=(x, y),
+                            radius=min_size+(int(l[size_category])*(max_size-min_size)/max_),
+                            fill=True,
+                            popup=pop
+                        ).add_to(fg)
         
 def filtrer_localisation(table, categories, values):
     """
@@ -171,7 +189,16 @@ def create_zone(table, location_category, tooltip="Click Me!", popup="Test"):
     ).add_to(carte)
 
 
-def table_to_zone(table, category, localisation_category="Coordonnées GPS de la formation", exception_values=["", "Etranger"]):
+def table_to_zone(table, category, color_conditions=[], localisation_category="Coordonnées GPS de la formation", exception_values=["", "Etranger"]):
+    """
+    table:list
+    category:str
+        categorie ou se trouve la zone correspondante
+    color_conditions:list de tuples (categorie, resultat)
+        nombre de
+    localisation_category:str
+        catégorie contenant la localisation
+    """
     localisations = uniticite(table, category, [category]) # Toutes les valeurs de la catégorie
 
     for ligne in localisations:
@@ -193,10 +220,10 @@ print("Nombre de catégories : ")
 for t_ in tables: # Compter les catégories
     print(t_, len(tables[t_][0]), sep=" : ")
 
-#print("Nom des catégories", CATEGORIES.keys(), sep=" : ")
+# print("Nom des catégories", CATEGORIES.keys(), sep=" : ")
 
 # Chercher dans les categories
-print(search_category("région"))
+print(search_category("capacité"))
 
 print("Nombre de lignes trouvées :", len(donneesV10(tables["parcoursup_"+default_year], ["\ufeffSession"], ["2024"], ["Statut de l’établissement de la filière de formation (public, privé…)"])))
 
@@ -207,14 +234,16 @@ fg = folium.FeatureGroup(name="Icon collection", control=False).add_to(carte)
 
 ETABLISSEMENTS = uniticite(tables["parcoursup_"+default_year], "Code UAI de l'établissement")
 
-vienne = filtrer_localisation(tables["parcoursup_"+default_year], ["région"], ["Nouvelle Aquitaine"])
+#loc = filtrer_localisation(tables["parcoursup_"+default_year], ["région"], ["Nouvelle Aquitaine"])
 
 #points_to_cards(ETABLISSEMENTS, "Coordonnées GPS de la formation")
-table_to_zone(ETABLISSEMENTS, "Département de l’établissement")
+
+#table_to_zone(ETABLISSEMENTS, "Région de l’établissement")
+
+#points_to_cards(tables["parcoursup_"+default_year], "Coordonnées GPS de la formation", "Capacité de l’établissement par formation") # Affiche les formations par un cercle dont la taille change en fonction de la capacité de cet établissement
 
 folium.LayerControl().add_to(carte)
 
 carte.save("carte.html")
 
 # https://www.data.gouv.fr/fr/datasets/parcoursup-2023-voeux-de-poursuite-detudes-et-de-reorientation-dans-lenseignement-superieur-et-reponses-des-etablissements/#/resources
-# https://stackoverflow.com/questions/59287928/algorithm-to-create-a-polygon-from-points

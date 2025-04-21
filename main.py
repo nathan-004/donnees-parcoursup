@@ -148,6 +148,9 @@ def create_polygon(points):
     pts = sorted(set(points))
     if len(pts) <= 1:
         return pts.copy()
+    
+    # Enlever les points trop éloignés
+    
 
     # 2. chaîne inférieure
     lower = []
@@ -166,8 +169,7 @@ def create_polygon(points):
     # 4. concatène (sans répéter le premier/dernier)
     return lower[:-1] + upper[:-1]   
 
-def create_zone(table, location_category, tooltip="Click Me!", popup="Test"):
-    
+def create_zone(table, location_category, tooltip="Click Me!", popup="Test", fill_color="black", color="blue"):
     locations = []
 
     for ligne in table:
@@ -179,27 +181,60 @@ def create_zone(table, location_category, tooltip="Click Me!", popup="Test"):
     
     folium.Polygon(
         locations=locations,
-        color="blue",
+        color=color,
         weight=6,
-        fill_color="red",
+        fill_color=fill_color,
         fill_opacity=0.5,
         fill=True,
         popup=popup,
         tooltip=tooltip,
     ).add_to(carte)
 
+def get_hex_color(values, zone, max_=None, lowest_color=(255, 255, 0), highest_color=(255, 0, 0)):
+    if max_ is None:
+        max_ = max(values.values())
 
-def table_to_zone(table, category, color_conditions=[], localisation_category="Coordonnées GPS de la formation", exception_values=["", "Etranger"]):
+    current_value = values[zone]
+
+    new_color = [
+        int(lowest_color[i] + (highest_color[i] - lowest_color[i]) * current_value / max_)
+        for i in range(3)
+    ]
+
+    hex_color = "#{:02x}{:02x}{:02x}".format(*new_color)
+
+    return hex_color
+
+def table_to_zone(table, category, color_category, localisation_category="Coordonnées GPS de la formation", exception_values=["", "Etranger"]):
     """
     table:list
     category:str
         categorie ou se trouve la zone correspondante
-    color_conditions:list de tuples (categorie, resultat)
-        nombre de
+    color_color:str
+        catégorie qui doit être un integer
     localisation_category:str
         catégorie contenant la localisation
     """
     localisations = uniticite(table, category, [category]) # Toutes les valeurs de la catégorie
+
+    values = {}
+
+    for ligne in localisations:
+        zone = ligne[category]
+
+        if zone in exception_values:
+            continue
+        
+        points = donneesV10(table, [category], [zone], [])
+
+        somme = 0
+
+        for idx, el in enumerate(points):
+            somme += int(el[color_category])
+
+        values[zone] = somme/idx+1
+
+    maximum = max(values.values())
 
     for ligne in localisations:
         zone = ligne[category]
@@ -208,7 +243,9 @@ def table_to_zone(table, category, color_conditions=[], localisation_category="C
             continue
 
         points = donneesV10(table, [category], [zone], [])
-        create_zone(points, localisation_category, zone)
+        col = get_hex_color(values, zone, maximum)
+
+        create_zone(points, localisation_category, zone, fill_color=col, color=col)
 
 # Importer toutes les tables dans /ressources + initialiser les variables
 tables = import_all()
@@ -223,7 +260,7 @@ for t_ in tables: # Compter les catégories
 # print("Nom des catégories", CATEGORIES.keys(), sep=" : ")
 
 # Chercher dans les categories
-print(search_category("capacité"))
+print(search_category("académie"))
 
 print("Nombre de lignes trouvées :", len(donneesV10(tables["parcoursup_"+default_year], ["\ufeffSession"], ["2024"], ["Statut de l’établissement de la filière de formation (public, privé…)"])))
 
@@ -241,6 +278,8 @@ ETABLISSEMENTS = uniticite(tables["parcoursup_"+default_year], "Code UAI de l'é
 #table_to_zone(ETABLISSEMENTS, "Région de l’établissement")
 
 #points_to_cards(tables["parcoursup_"+default_year], "Coordonnées GPS de la formation", "Capacité de l’établissement par formation") # Affiche les formations par un cercle dont la taille change en fonction de la capacité de cet établissement
+
+table_to_zone(tables["parcoursup_"+default_year], "Académie de l’établissement", "Effectif total des candidats pour une formation")
 
 folium.LayerControl().add_to(carte)
 

@@ -139,6 +139,89 @@ def uniticite(table, category, resultats=[]):
     
     return new_table
 
+def mediane(liste):
+    liste_triee = sorted(liste)
+    n = len(liste_triee)
+    if n % 2 == 1:
+        return liste_triee[n // 2]
+    else:
+        return (liste_triee[n // 2 - 1] + liste_triee[n // 2]) / 2
+
+def filtrer_distance(points, max_value_coeff=4.5):
+    if not points:
+        return []
+
+    xs = [x for x, y in points]
+    ys = [y for x, y in points]
+    
+    print(xs, ys)
+
+    # Médiane
+    med_x = mediane(xs)
+    med_y = mediane(ys)
+
+    moyenne = (med_x, med_y)
+
+    folium.CircleMarker(
+        location=moyenne,
+        radius=6,
+        color="green",
+        fill=True,
+        fill_color="green",
+        fill_opacity=0.7,
+        popup="Centre",
+    ).add_to(fg)
+
+    distances = {}
+    moy_dist = 0
+    max_ = 0
+
+    for point in points:
+        dist = ((point[0] - moyenne[0]) ** 2 + (point[1] - moyenne[1]) ** 2) ** 0.5
+        distances[point] = dist
+        if dist > max_:
+            if dist > max_ * max_value_coeff and max_ != 0:
+                print(dist)
+                continue
+            max_ = dist
+        if max_ > dist * max_value_coeff and max_ != 0:
+            moy_dist -= max_
+            max_ = dist
+        moy_dist += dist
+
+    moy_dist /= len(points)
+    seuil = moy_dist * max_value_coeff
+
+    new_points = []
+
+    for p in distances:
+        if distances[p] <= seuil:
+            new_points.append(p)
+            folium.Marker(
+                    location=p,
+                    radius=10,
+                    color="blue",
+                    fill=True,
+                    fill_color="blue",
+                    fill_opacity=1.5,
+                    tooltip=f"Écarté : distance={distances[p]:.2f}</br>Seuil : {seuil}",
+                    popup=f"Écarté : distance={distances[p]}</br>Seuil : {seuil}",
+            ).add_to(fg)
+        else:
+            # Point trop éloigné → afficher en rouge
+            if fg is not None:
+                folium.CircleMarker(
+                    location=p,
+                    radius=5,
+                    color="red",
+                    fill=True,
+                    fill_color="red",
+                    fill_opacity=0.6,
+                    popup=f"Écarté : distance={distances[p]:.2f}",
+                ).add_to(fg)
+
+    return new_points
+
 def orientation(a, b, c):
     # renvoie >0 si a→b→c tournent à gauche, <0 si à droite
     return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
@@ -148,9 +231,6 @@ def create_polygon(points):
     pts = sorted(set(points))
     if len(pts) <= 1:
         return pts.copy()
-    
-    # Enlever les points trop éloignés
-    
 
     # 2. chaîne inférieure
     lower = []
@@ -167,7 +247,12 @@ def create_polygon(points):
         upper.append(p)
 
     # 4. concatène (sans répéter le premier/dernier)
-    return lower[:-1] + upper[:-1]   
+    result = lower[:-1] + upper[:-1]
+    
+    # Enlever les points trop éloignés
+    new_result = filtrer_distance(result)
+
+    return new_result
 
 def create_zone(table, location_category, tooltip="Click Me!", popup="Test", fill_color="black", color="blue"):
     locations = []

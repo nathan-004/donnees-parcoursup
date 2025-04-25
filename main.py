@@ -1,10 +1,13 @@
 from csv import DictReader
 import folium
 import os
+import math
 
 from animation import *
 
 default_year = "2024"
+C=5
+A=0.25
 
 def importer_table(fichier):
     with open(fichier, encoding="UTF-8") as f:
@@ -147,30 +150,18 @@ def mediane(liste):
     else:
         return (liste_triee[n // 2 - 1] + liste_triee[n // 2]) / 2
 
-def filtrer_distance(points, max_value_coeff=4.5):
+def filtrer_distance(points):
     if not points:
         return []
 
     xs = [x for x, y in points]
     ys = [y for x, y in points]
-    
-    print(xs, ys)
 
     # Médiane
     med_x = mediane(xs)
     med_y = mediane(ys)
 
     moyenne = (med_x, med_y)
-
-    folium.CircleMarker(
-        location=moyenne,
-        radius=6,
-        color="green",
-        fill=True,
-        fill_color="green",
-        fill_opacity=0.7,
-        popup="Centre",
-    ).add_to(fg)
 
     distances = {}
     moy_dist = 0
@@ -180,16 +171,19 @@ def filtrer_distance(points, max_value_coeff=4.5):
         dist = ((point[0] - moyenne[0]) ** 2 + (point[1] - moyenne[1]) ** 2) ** 0.5
         distances[point] = dist
         if dist > max_:
-            if dist > max_ * max_value_coeff and max_ != 0:
-                print(dist)
-                continue
+            #if dist > max_* and max_ != 0:
+            #    print(dist)
+            #    continue
             max_ = dist
-        if max_ > dist * max_value_coeff and max_ != 0:
-            moy_dist -= max_
-            max_ = dist
+        #if max_ > dist * max_value_coeff and max_ != 0:
+        #    moy_dist -= max_
+        #    max_ = dist
         moy_dist += dist
 
     moy_dist /= len(points)
+
+    max_value_coeff = C * math.exp(-A * moy_dist)
+
     seuil = moy_dist * max_value_coeff
 
     new_points = []
@@ -197,16 +191,6 @@ def filtrer_distance(points, max_value_coeff=4.5):
     for p in distances:
         if distances[p] <= seuil:
             new_points.append(p)
-            folium.Marker(
-                    location=p,
-                    radius=10,
-                    color="blue",
-                    fill=True,
-                    fill_color="blue",
-                    fill_opacity=1.5,
-                    tooltip=f"Écarté : distance={distances[p]:.2f}</br>Seuil : {seuil}",
-                    popup=f"Écarté : distance={distances[p]}</br>Seuil : {seuil}",
-            ).add_to(fg)
         else:
             # Point trop éloigné → afficher en rouge
             if fg is not None:
@@ -226,7 +210,7 @@ def orientation(a, b, c):
     # renvoie >0 si a→b→c tournent à gauche, <0 si à droite
     return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
 
-def create_polygon(points):
+def create_polygon(points, filtre=True):
     # 1. on trie
     pts = sorted(set(points))
     if len(pts) <= 1:
@@ -250,7 +234,10 @@ def create_polygon(points):
     result = lower[:-1] + upper[:-1]
     
     # Enlever les points trop éloignés
-    new_result = filtrer_distance(result)
+    if filtre:
+        new_result = filtrer_distance(result)
+    else:
+        new_result = result
 
     return new_result
 
@@ -317,7 +304,7 @@ def table_to_zone(table, category, color_category, localisation_category="Coordo
         for idx, el in enumerate(points):
             somme += int(el[color_category])
 
-        values[zone] = somme/idx+1
+        values[zone] = somme/(idx+1)
 
     maximum = max(values.values())
 
@@ -354,7 +341,14 @@ print("Nombre de lignes trouvées :", len(donneesV10(tables["parcoursup_"+defaul
 carte = folium.Map(location=[46.8566, 2.3522], zoom_start=7)
 fg = folium.FeatureGroup(name="Icon collection", control=False).add_to(carte)
 
-ETABLISSEMENTS = uniticite(tables["parcoursup_"+default_year], "Code UAI de l'établissement")
+# ETABLISSEMENTS = uniticite(tables["parcoursup_"+default_year], "Code UAI de l'établissement")
+
+# Ajuster les valeurs en fonction de la taille de l'élément sélectionné
+# Region : 5, 0.25
+# Département : 
+C = 5 # Constante de coeff maximum
+A = 0.5 # Taux de décroissance de la courbe
+
 
 #loc = filtrer_localisation(tables["parcoursup_"+default_year], ["région"], ["Nouvelle Aquitaine"])
 
@@ -364,10 +358,49 @@ ETABLISSEMENTS = uniticite(tables["parcoursup_"+default_year], "Code UAI de l'é
 
 #points_to_cards(tables["parcoursup_"+default_year], "Coordonnées GPS de la formation", "Capacité de l’établissement par formation") # Affiche les formations par un cercle dont la taille change en fonction de la capacité de cet établissement
 
-table_to_zone(tables["parcoursup_"+default_year], "Académie de l’établissement", "Effectif total des candidats pour une formation")
+# table_to_zone(tables["parcoursup_"+default_year], "Département de l’établissement", "Effectif total des candidats pour une formation")
 
-folium.LayerControl().add_to(carte)
+def init_carte(carte_name, location_start=[46.8566, 2.3522], zoom_start=7): # Couvre toute la France
+    carte = folium.Map(location=[46.8566, 2.3522], zoom_start=7)
+    fg = folium.FeatureGroup(name="Icon collection", control=False).add_to(carte)
 
-carte.save("carte.html")
+def save_carte(carte, filename="cartes/carte.html"):
+    folium.LayerControl().add_to(carte)
+    carte.save(filename)
+
+def aide(command_name=None):
+    if command_name is None:
+        for com in commands:
+            print(commands, commands["Description"], sep=' | ')
+    else:
+        print(command_name)
+
+        for el in commands[command_name]:
+            print(el, commands[command_name][el])
+
+commands = { # 0 -> Facultatif  1 -> Obligatoire
+    "aide": {"Description": "Permet d'afficher toutes les commandes possibles", "Arguments" : {"nom-commande": (str, 0)}, "Commande": aide},
+}
+
+def home():
+    inp = input("user > ")
+    elements = inp.split(" ")
+
+    if elements[0] in commands:
+        args = []
+        command_args = commands[elements[0]]["Arguments"]
+
+        # Regarder si il n'y a pas d'arguments dans l'input
+        for word in elements:
+            if word in command_args:
+                pass
+        
+    else:
+        print('Commande non-existante. Taper "help" pour voir les commandes existantes.')
+    
+
+if __name__ == "__main__":
+    while True:
+        home()
 
 # https://www.data.gouv.fr/fr/datasets/parcoursup-2023-voeux-de-poursuite-detudes-et-de-reorientation-dans-lenseignement-superieur-et-reponses-des-etablissements/#/resources

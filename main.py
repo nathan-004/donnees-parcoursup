@@ -371,12 +371,36 @@ def save_carte(carte, filename="cartes/carte.html"):
 def aide(command_name=None):
     if command_name is None:
         for com in commands:
-            print(commands, commands["Description"], sep=' | ')
+            print(com, commands[com]["Description"], sep=' | ')
     else:
         print(command_name)
 
         for el in commands[command_name]:
-            print(el, commands[command_name][el])
+            print(el, commands[command_name][el], sep=" | ")
+
+def transform(string:str): 
+    """
+    Prends une chaîne de caractère en entrée et renvoie l'équivalent de son type
+
+    "test" -> "test"
+    "1" -> int(1)
+    "1.0" -> float(1.0)
+    """
+
+    if string.isdigit():
+        return int(string)
+    elif "." in string or "," in string:
+        char = "." if "." in string else ","
+        string = list(string)
+
+        first_n, last_n = string[:string.index(char)], string[string.index(char)+1:]
+
+        try:
+            return int("".join(first_n)) + int("".join(last_n)) / 10 ** len(last_n)
+        except ValueError:
+            print("test")
+    else:
+        return string
 
 commands = { # 0 -> Facultatif  1 -> Obligatoire
     "aide": {"Description": "Permet d'afficher toutes les commandes possibles", "Arguments" : {"nom-commande": (str, 0)}, "Commande": aide},
@@ -385,19 +409,26 @@ commands = { # 0 -> Facultatif  1 -> Obligatoire
 def home():
     inp = input("user > ")
     elements = inp.split(" ")
+    command = "aide"
 
     if elements[0] in commands:
+        command = elements[0]
         args = []
-        command_args = commands[elements[0]]["Arguments"]
-
+        command_args = list(commands[elements[0]]["Arguments"].keys())
         # Regarder si il n'y a pas d'arguments dans l'input
-        for word in elements:
-            if word in command_args:
-                pass
-        
+        for idx, word in enumerate(elements[1:]):
+            word = transform(word) 
+            if commands[elements[0]]["Arguments"][command_args[idx]][0] == type(word):
+                args.append(word)
+            else:
+                print(f"{str(type(word))} trouvé au lieu de {str(commands[elements[0]]["Arguments"][command_args[idx]][0])} pour l'argument {command_args[idx]}")
+                return 2
     else:
-        print('Commande non-existante. Taper "help" pour voir les commandes existantes.')
+        print('Commande non-existante. Taper "aide" pour voir les commandes existantes.')
+        return 1
     
+    commands[command]["Commande"](*args)
+
 
 if __name__ == "__main__":
     while True:

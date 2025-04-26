@@ -5,9 +5,16 @@ import math
 
 from animation import *
 
-default_year = "2024"
-C=5
-A=0.25
+variables = {
+    "C": 5, # Constante de coeff maximum 
+    "A": 0.25, # Taux de décroissance de la courbe
+    "default_year": "2024",
+    "start": "ressource/"
+}
+
+# Ajuster les valeurs en fonction de la taille de l'élément sélectionné
+# Region : 5, 0.25
+# Département : 
 
 def importer_table(fichier):
     with open(fichier, encoding="UTF-8") as f:
@@ -19,7 +26,7 @@ def importer_table(fichier):
 
 def import_all():
     tables = {}
-    start = "ressource/"
+    start = variables["start"]
     for filename in os.listdir(start):
         tables[filename[:-4]] = importer_table(start+filename)
     return tables
@@ -182,7 +189,7 @@ def filtrer_distance(points):
 
     moy_dist /= len(points)
 
-    max_value_coeff = C * math.exp(-A * moy_dist)
+    max_value_coeff = variables["C"] * math.exp(-variables["A"] * moy_dist)
 
     seuil = moy_dist * max_value_coeff
 
@@ -334,7 +341,7 @@ for t_ in tables: # Compter les catégories
 # Chercher dans les categories
 print(search_category("académie"))
 
-print("Nombre de lignes trouvées :", len(donneesV10(tables["parcoursup_"+default_year], ["\ufeffSession"], ["2024"], ["Statut de l’établissement de la filière de formation (public, privé…)"])))
+print("Nombre de lignes trouvées :", len(donneesV10(tables["parcoursup_"+variables["default_year"]], ["\ufeffSession"], ["2024"], ["Statut de l’établissement de la filière de formation (public, privé…)"])))
 
 #print(len(jointure(tables["parcoursup_2020"], tables["parcoursup_2019"], ["Code UAI de l'établissement"], ["Établissement"])))
 
@@ -342,13 +349,6 @@ carte = folium.Map(location=[46.8566, 2.3522], zoom_start=7)
 fg = folium.FeatureGroup(name="Icon collection", control=False).add_to(carte)
 
 # ETABLISSEMENTS = uniticite(tables["parcoursup_"+default_year], "Code UAI de l'établissement")
-
-# Ajuster les valeurs en fonction de la taille de l'élément sélectionné
-# Region : 5, 0.25
-# Département : 
-C = 5 # Constante de coeff maximum
-A = 0.5 # Taux de décroissance de la courbe
-
 
 #loc = filtrer_localisation(tables["parcoursup_"+default_year], ["région"], ["Nouvelle Aquitaine"])
 
@@ -401,11 +401,23 @@ def transform(string:str):
             print("test")
     else:
         return string
+    
+def define(var_name, value, type_var=False):
+    if not type_var:
+        variables[var_name] = value
+    else:
+        globals()[var_name] = value # Problème si utilisateur entre des noms de fonctions
+
+def stockage():
+    for el in variables:
+        print(el, variables[el], sep=" <---> ")
 
 commands = { # 0 -> Facultatif  1 -> Obligatoire
     "aide": {"Description": "Permet d'afficher toutes les commandes possibles", "Arguments" : {"nom-commande": (str, 0)}, "Commande": aide},
     "chercher": {"Description": "Cherche la catégorie correspondante à l'argument", "Arguments" : {"nom-catégorie" : (str, 1)}, "Commande": search_category},
-    "quitter": {"Description": "Quitte le programme", "Arguments": {}, "Commande": quit}
+    "definir": {"Description": "Modifie une variable ou en crée dans le programme", "Arguments": {"nom-variable": (str, 1), "valeur": (type(None), 1), "type-variable": (bool, 0)}, "Commande": define},
+    "quitter": {"Description": "Quitte le programme", "Arguments": {}, "Commande": quit},
+    "stockage": {"Description": "Affiche tous les éléments dans le stockage qui peuvent être modifiés par l'utilisateur avec 'definir'", "Arguments": {}, "Commande": stockage},
 }
 
 def home():
@@ -419,11 +431,11 @@ def home():
         command_args = list(commands[elements[0]]["Arguments"].keys())
         # Regarder si il n'y a pas d'arguments dans l'input
         for idx, word in enumerate(elements[1:]):
-            word = transform(word)
+            word = transform(word.replace("_", " "))
             if idx+1 > len(command_args):
-                print(f"{command} nécessite {len(command_args)} arguments, {len(elements)-1} trouvés.")
+                print(f"{command} nécessite {len(command_args)} arguments, {len(elements)-1} trouvés. \n Utiliser des '_' pour remplacer les espaces si nécessaire.")
                 return 3
-            if commands[elements[0]]["Arguments"][command_args[idx]][0] == type(word):
+            if commands[elements[0]]["Arguments"][command_args[idx]][0] == type(word) or commands[elements[0]]["Arguments"][command_args[idx]][0] == type(None):
                 args.append(word)
             else:
                 print(f"{str(type(word))} trouvé au lieu de {str(commands[elements[0]]["Arguments"][command_args[idx]][0])} pour l'argument {command_args[idx]}")

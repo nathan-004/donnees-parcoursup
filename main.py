@@ -404,20 +404,25 @@ def transform(string:str):
 
 commands = { # 0 -> Facultatif  1 -> Obligatoire
     "aide": {"Description": "Permet d'afficher toutes les commandes possibles", "Arguments" : {"nom-commande": (str, 0)}, "Commande": aide},
+    "chercher": {"Description": "Cherche la catégorie correspondante à l'argument", "Arguments" : {"nom-catégorie" : (str, 1)}, "Commande": search_category},
+    "quitter": {"Description": "Quitte le programme", "Arguments": {}, "Commande": quit}
 }
 
 def home():
     inp = input("user > ")
     elements = inp.split(" ")
     command = "aide"
+    args = []
 
     if elements[0] in commands:
         command = elements[0]
-        args = []
         command_args = list(commands[elements[0]]["Arguments"].keys())
         # Regarder si il n'y a pas d'arguments dans l'input
         for idx, word in enumerate(elements[1:]):
-            word = transform(word) 
+            word = transform(word)
+            if idx+1 > len(command_args):
+                print(f"{command} nécessite {len(command_args)} arguments, {len(elements)-1} trouvés.")
+                return 3
             if commands[elements[0]]["Arguments"][command_args[idx]][0] == type(word):
                 args.append(word)
             else:
@@ -427,8 +432,19 @@ def home():
         print('Commande non-existante. Taper "aide" pour voir les commandes existantes.')
         return 1
     
-    commands[command]["Commande"](*args)
+    # Regarder qu'il y a bien tous les inputs nécessaires
+    for idx, arg in enumerate(command_args):
+        if commands[elements[0]]["Arguments"][arg][1] == 1:
+            if len(args) < idx + 1:
+                arg_input = None
+                while type(arg_input) != commands[elements[0]]["Arguments"][arg][0]:
+                    arg_input = input(f"Argument {arg} de type {commands[elements[0]]["Arguments"][arg][0]} : ")
+                args.append(arg_input)
 
+    res = commands[command]["Commande"](*args)
+
+    if res != None:
+        print(res)
 
 if __name__ == "__main__":
     while True:

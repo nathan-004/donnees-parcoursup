@@ -9,8 +9,13 @@ variables = {
     "C": 5, # Constante de coeff maximum 
     "A": 0.25, # Taux de décroissance de la courbe
     "default_year": "2024",
-    "start": "ressource/"
+    "start": "ressource/",
+    "tables": {}, 
 }
+
+constantes = set([ # Initialise les variables qui ne peuvent pas être modifiées par l'utilisateur
+    "tables"
+])
 
 # Ajuster les valeurs en fonction de la taille de l'élément sélectionné
 # Region : 5, 0.25
@@ -34,8 +39,8 @@ def import_all():
 def creer_categories():
     categories = {}
 
-    for table in animate(tables, title="Création des catégories", title_end="Création des catégories terminées", char="square"):
-        for cat in tables[table][0]:
+    for table in animate(variables["tables"], title="Création des catégories", title_end="Création des catégories terminées", char="square"):
+        for cat in variables["tables"][table][0]:
             if cat in categories:
                 categories[cat].append(table)
             else:
@@ -327,21 +332,21 @@ def table_to_zone(table, category, color_category, localisation_category="Coordo
         create_zone(points, localisation_category, zone, fill_color=col, color=col)
 
 # Importer toutes les tables dans /ressources + initialiser les variables
-tables = import_all()
+variables["tables"] = import_all()
 
 # Initialiser les catégories
 CATEGORIES = creer_categories()
 
 print("Nombre de catégories : ")
-for t_ in tables: # Compter les catégories
-    print(t_, len(tables[t_][0]), sep=" : ")
+for t_ in variables["tables"]: # Compter les catégories
+    print(t_, len(variables["tables"][t_][0]), sep=" : ")
 
 # print("Nom des catégories", CATEGORIES.keys(), sep=" : ")
 
 # Chercher dans les categories
 print(search_category("académie"))
 
-print("Nombre de lignes trouvées :", len(donneesV10(tables["parcoursup_"+variables["default_year"]], ["\ufeffSession"], ["2024"], ["Statut de l’établissement de la filière de formation (public, privé…)"])))
+print("Nombre de lignes trouvées :", len(donneesV10(variables["tables"]["parcoursup_"+variables["default_year"]], ["\ufeffSession"], ["2024"], ["Statut de l’établissement de la filière de formation (public, privé…)"])))
 
 #print(len(jointure(tables["parcoursup_2020"], tables["parcoursup_2019"], ["Code UAI de l'établissement"], ["Établissement"])))
 
@@ -398,18 +403,26 @@ def transform(string:str):
         try:
             return int("".join(first_n)) + int("".join(last_n)) / 10 ** len(last_n)
         except ValueError:
-            print("test")
+            pass
     else:
         return string
     
 def define(var_name, value, type_var=False):
+    if var_name in constantes:
+        print(f"Impossible de modifier la variable {var_name} car c'est une constante.")
+        return
     if not type_var:
         variables[var_name] = value
     else:
-        globals()[var_name] = value # Problème si utilisateur entre des noms de fonctions
+        globals()[var_name] = value # Problème si utilisateur entre des noms de fonctions ou de variables importantes
 
 def stockage():
     for el in variables:
+        if el in constantes:
+            to_print = (el, list(variables[el].keys())) if el == "tables" else (el, variables[el])
+            print(*to_print, sep=" <---> ", end="")
+            print(" (Constante)")
+            continue
         print(el, variables[el], sep=" <---> ")
 
 commands = { # 0 -> Facultatif  1 -> Obligatoire
@@ -420,8 +433,12 @@ commands = { # 0 -> Facultatif  1 -> Obligatoire
     "stockage": {"Description": "Affiche tous les éléments dans le stockage qui peuvent être modifiés par l'utilisateur avec 'definir'", "Arguments": {}, "Commande": stockage},
 }
 
-def home():
-    inp = input("user > ")
+def home(commande=None):
+    if commande is not None:
+        inp = commande
+    else:
+        inp = input("user > ")
+        
     elements = inp.split(" ")
     command = "aide"
     args = []
@@ -441,8 +458,19 @@ def home():
                 print(f"{str(type(word))} trouvé au lieu de {str(commands[elements[0]]["Arguments"][command_args[idx]][0])} pour l'argument {command_args[idx]}")
                 return 2
     else:
-        print('Commande non-existante. Taper "aide" pour voir les commandes existantes.')
-        return 1
+        try:
+            for var_name in variables:
+                if var_name in inp:
+                    if var_name in constantes:
+                        print(f"Impossible de modifier la variable {var_name} car c'est une constante.")
+                        return 1
+                    inp = inp.replace(var_name, f"variables['{var_name}']")
+            print("Eval : ", inp)
+            print(eval(inp))
+            return 0
+        except:
+            print('Commande non-existante. Taper "aide" pour voir les commandes existantes.')
+            return 1
     
     # Regarder qu'il y a bien tous les inputs nécessaires
     for idx, arg in enumerate(command_args):

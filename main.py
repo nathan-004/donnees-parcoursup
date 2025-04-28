@@ -438,7 +438,7 @@ def home(commande=None):
         inp = commande
     else:
         inp = input("user > ")
-        
+
     elements = inp.split(" ")
     command = "aide"
     args = []
@@ -459,14 +459,17 @@ def home(commande=None):
                 return 2
     else:
         try:
+            variable = False
             for var_name in variables:
                 if var_name in inp:
                     if var_name in constantes:
                         print(f"Impossible de modifier la variable {var_name} car c'est une constante.")
                         return 1
+                    variable = True
+
                     inp = inp.replace(var_name, f"variables['{var_name}']")
-            print("Eval : ", inp)
-            print(eval(inp))
+            if variable:
+                print(eval(inp))
             return 0
         except:
             print('Commande non-existante. Taper "aide" pour voir les commandes existantes.')

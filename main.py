@@ -10,7 +10,9 @@ variables = {
     "A": 0.25, # Taux de décroissance de la courbe
     "default_year": "2024",
     "start": "ressource/",
-    "tables": {}, 
+    "tables": {},
+    "location_start": [46.8566, 2.3522], # France,
+    "location_zoom": 7, # Zoom de la carte
 }
 
 constantes = set([ # Initialise les variables qui ne peuvent pas être modifiées par l'utilisateur
@@ -77,6 +79,11 @@ def donneesV10(T, categories, valeurs, resultats):
         Categories à renvoyer
     """
     
+    for cat in categories:
+        if cat not in T[0]:
+            print(f"Erreur : la catégorie {cat} n'existe pas dans la table.")
+            return []
+
     t = []
     
     if resultats == []:
@@ -97,10 +104,15 @@ def jointure(table1, table2, categories, resultats):
                  t.append({res: table1[i1][res] if res in table1[i1] else table2[i2][res] for res in resultats})
     return t
 
-def sort(table, category):
-    # Category must be an integer
-
-    return sorted(table, key= lambda x : int(x[category]), reverse=True)
+def sort(table, category, reverse=True):
+    try:
+        if type(table[0][category]) == str and table[0][category].isdigit():
+            return sorted(table, key=lambda x: int(x[category]), reverse=reverse)
+        else:
+            return sorted(table, key=lambda x: x[category], reverse=reverse)
+    except (KeyError, ValueError, TypeError) as e:
+        print(f"Erreur lors du tri : {e}")
+        return table
 
 def create_popup(line):
     html = line["Établissement"] + "-" + line["cod_aff_form"]
@@ -109,6 +121,9 @@ def create_popup(line):
 
 def points_to_cards(table, category, size_category, min_size=5, max_size=35):
     """
+    category:str
+        Categorie devant être un str
+        Définit la localisation du marker sous forme de coordonnées GPS
     size_category:str
         Categorie devant être un int
         Définit la taille du marker
@@ -365,13 +380,27 @@ fg = folium.FeatureGroup(name="Icon collection", control=False).add_to(carte)
 
 # table_to_zone(tables["parcoursup_"+default_year], "Département de l’établissement", "Effectif total des candidats pour une formation")
 
-def init_carte(carte_name, location_start=[46.8566, 2.3522], zoom_start=7): # Couvre toute la France
-    carte = folium.Map(location=[46.8566, 2.3522], zoom_start=7)
+def init_carte(): # Couvre toute la France
+    location = variables["location_start"]
+    zoom_start = variables["location_zoom"]
+
+    if type(location) != list and len(location) != 2:
+        print("Erreur : la localisation doit être une liste de deux éléments")
+        return
+
+    carte = folium.Map(location=location, zoom_start=zoom_start)
     fg = folium.FeatureGroup(name="Icon collection", control=False).add_to(carte)
 
-def save_carte(carte, filename="cartes/carte.html"):
+def save_carte(carte, filename="carte.html"):
+    filename = 'cartes/' + filename
+
+    if not os.path.exists(filename):
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+
     folium.LayerControl().add_to(carte)
     carte.save(filename)
+
+    init_carte()
 
 def aide(command_name=None):
     if command_name is None:
@@ -404,6 +433,9 @@ def transform(string:str):
             return int("".join(first_n)) + int("".join(last_n)) / 10 ** len(last_n)
         except ValueError:
             pass
+    elif string[0] == "[" and string[-1] == "]":
+        string = string[1:-1].split(",")
+        return [transform(el) for el in string]
     else:
         return string
     
@@ -425,12 +457,95 @@ def stockage():
             continue
         print(el, variables[el], sep=" <---> ")
 
+def donnees_commande(table, categories, valeurs, resultats, nom_de_la_table=None):
+    """
+    table:str
+        Nom de la table à utiliser
+    categories:list
+        Nom des catégories dans l'ordre qui doivent être vérifiées
+    valeurs:list
+        Valeurs à vérifier dans l'ordre
+    resultats:list
+        Categories à renvoyer
+    nom_de_la_table:str
+        Nom de la table à créer (si None, le nom sera généré automatiquement)
+    """
+
+    if nom_de_la_table is None:
+        i = 0
+        while str(i) in variables["tables"]:
+            i += 1
+        nom_de_la_table = f"table_{i}"
+    
+    if table not in variables["tables"]:
+        print(f"Table {table} non trouvée.")
+        return
+
+    T = variables["tables"][table]
+
+    variables["tables"][nom_de_la_table] = donneesV10(T, categories, valeurs, resultats)
+
+def sort_commande(table, category, ordre=True):
+    """
+    table:str
+        Nom de la table à trier
+    category:str
+        Catégorie à trier
+    ordre:bool
+        True pour un tri décroissant, False pour un tri croissant
+    """
+
+    if table not in variables["tables"]:
+        print(f"Table {table} non trouvée.")
+        return
+
+    T = variables["tables"][table]
+
+    variables["tables"][table] = sort(T, category, ordre)
+
+def points_to_cards_command(table, localisation_category, size_category):
+    """
+    table:str
+        Nom de la table à transformer
+    localisation_category:str
+        Catégorie contenant la localisation
+    size_category:str
+        Catégorie contenant la taille du marker
+    """
+
+    if table not in variables["tables"]:
+        print(f"Table {table} non trouvée.")
+        return
+
+    T = variables["tables"][table]
+
+    if localisation_category not in T[0]:
+        print(f"Catégorie {localisation_category} non trouvée dans la table {table}.")
+        return
+    if size_category not in T[0]:
+        print(f"Catégorie {size_category} non trouvée dans la table {table}.")
+        return
+    
+    try:
+        if type(eval(T[0][size_category])) != int:
+            print(f"Catégorie {size_category} doit être un int.")
+            return
+    except:
+        print(f"Catégorie {size_category} doit être un int.")
+        return
+
+    points_to_cards(T, localisation_category, size_category)
+
 commands = { # 0 -> Facultatif  1 -> Obligatoire
     "aide": {"Description": "Permet d'afficher toutes les commandes possibles", "Arguments" : {"nom-commande": (str, 0)}, "Commande": aide},
+    "carte": {"Description": "Enregistre la carte dans le fichier HTML", "Arguments": {"nom-fichier": (str, 0)}, "Commande": save_carte},
     "chercher": {"Description": "Cherche la catégorie correspondante à l'argument", "Arguments" : {"nom-catégorie" : (str, 1)}, "Commande": search_category},
     "definir": {"Description": "Modifie une variable ou en crée dans le programme", "Arguments": {"nom-variable": (str, 1), "valeur": (type(None), 1), "type-variable": (bool, 0)}, "Commande": define},
+    "filtrer": {"Description": "Filtre les données en fonction de la catégorie et de la valeur", "Arguments": {"nom-de-la-table-à-filtrer": (str, 1), "catégories": (list, 1), "valeurs": (list, 1), "nom-de-la-table": (str, 1)}, "Commande": donnees_commande},
     "quitter": {"Description": "Quitte le programme", "Arguments": {}, "Commande": quit},
     "stockage": {"Description": "Affiche tous les éléments dans le stockage qui peuvent être modifiés par l'utilisateur avec 'definir'", "Arguments": {}, "Commande": stockage},
+    "table-vers-point": {"Description": "Transforme une table en points sur la carte", "Arguments": {"nom-de-la-table-à-transformer": (str, 1), "catégorie-de-localisation": (str, 1), "catégorie-de-taille": (str, 1)}, "Commande": points_to_cards_command},
+    "trier": {"Description": "Trie les données en fonction de la catégorie", "Arguments": {"nom-de-la-table-à-trier": (str, 1), "catégorie": (str, 1), "ordre": (bool, 0)}, "Commande": sort_commande},
 }
 
 def home(commande=None):
@@ -448,9 +563,9 @@ def home(commande=None):
         command_args = list(commands[elements[0]]["Arguments"].keys())
         # Regarder si il n'y a pas d'arguments dans l'input
         for idx, word in enumerate(elements[1:]):
-            word = transform(word.replace("_", " "))
+            word = transform(word.replace("-", " "))
             if idx+1 > len(command_args):
-                print(f"{command} nécessite {len(command_args)} arguments, {len(elements)-1} trouvés. \n Utiliser des '_' pour remplacer les espaces si nécessaire.")
+                print(f"{command} nécessite {len(command_args)} arguments, {len(elements)-1} trouvés. \n Utiliser des '-' pour remplacer les espaces si nécessaire.")
                 return 3
             if commands[elements[0]]["Arguments"][command_args[idx]][0] == type(word) or commands[elements[0]]["Arguments"][command_args[idx]][0] == type(None):
                 args.append(word)
@@ -467,9 +582,9 @@ def home(commande=None):
                         return 1
                     variable = True
 
-                    inp = inp.replace(var_name, f"variables['{var_name}']")
+                    # inp = inp.replace(var_name, f"variables['{var_name}']") # Pas nécessaire car on définit les globals() comme variables
             if variable:
-                print(eval(inp))
+                print(eval(inp, variables))
             return 0
         except:
             print('Commande non-existante. Taper "aide" pour voir les commandes existantes.')
@@ -491,6 +606,17 @@ def home(commande=None):
 
 if __name__ == "__main__":
     while True:
-        home()
+        try:
+            home()
+        except KeyboardInterrupt:
+            a = ""
+            while a not in ["O", "N"]:
+                a = input("Voulez-vous enregistrer la carte ? (O/N) : ").upper()
+            if a == "O":
+                save_carte(carte, "carte.html")
+            else:
+                print("Carte non enregistrée.")
+            print("Au revoir !")
+            break
 
 # https://www.data.gouv.fr/fr/datasets/parcoursup-2023-voeux-de-poursuite-detudes-et-de-reorientation-dans-lenseignement-superieur-et-reponses-des-etablissements/#/resources

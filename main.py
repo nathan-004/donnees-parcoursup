@@ -145,12 +145,17 @@ def points_to_cards(table, category, size_category, min_size=5, max_size=35):
                             popup=pop
                         ).add_to(fg)
         
-def filtrer_localisation(table, categories, values):
+def filtrer_localisation(table, categories, values, nom_de_la_table):
     """
     Categories -> commune, code départemental, "département ", académie, région
     """
 
-    new_categories = [search_category(el)[0] for el in categories]
+    new_categories = []
+
+    for el in categories:
+        t = search_category(el)
+        if len(t) != 0:
+            new_categories.append(t[0])
     
     return donneesV10(table, new_categories, values, [])
 
@@ -536,12 +541,16 @@ def points_to_cards_command(table, localisation_category, size_category):
 
     points_to_cards(T, localisation_category, size_category)
 
+def filtrer_localisation_commande():
+    pass
+
 commands = { # 0 -> Facultatif  1 -> Obligatoire
     "aide": {"Description": "Permet d'afficher toutes les commandes possibles", "Arguments" : {"nom-commande": (str, 0)}, "Commande": aide},
     "carte": {"Description": "Enregistre la carte dans le fichier HTML", "Arguments": {"nom-fichier": (str, 0)}, "Commande": save_carte},
     "chercher": {"Description": "Cherche la catégorie correspondante à l'argument", "Arguments" : {"nom-catégorie" : (str, 1)}, "Commande": search_category},
     "definir": {"Description": "Modifie une variable ou en crée dans le programme", "Arguments": {"nom-variable": (str, 1), "valeur": (type(None), 1), "type-variable": (bool, 0)}, "Commande": define},
     "filtrer": {"Description": "Filtre les données en fonction de la catégorie et de la valeur", "Arguments": {"nom-de-la-table-à-filtrer": (str, 1), "catégories": (list, 1), "valeurs": (list, 1), "nom-de-la-table": (str, 1)}, "Commande": donnees_commande},
+    "filtrer-localisation": {"Description": "Filtre les données en fonction de leurs localisations.", "Arguments": {"nom-de-la-table-à-filtrer": (str, 1), "catégories": (list, 1), "valeurs": (list, 1), "nom-de-la-table": (str, 0)}, "Commande": filtrer_localisation_commande},
     "quitter": {"Description": "Quitte le programme", "Arguments": {}, "Commande": quit},
     "stockage": {"Description": "Affiche tous les éléments dans le stockage qui peuvent être modifiés par l'utilisateur avec 'definir'", "Arguments": {}, "Commande": stockage},
     "table-vers-point": {"Description": "Transforme une table en points sur la carte", "Arguments": {"nom-de-la-table-à-transformer": (str, 1), "catégorie-de-localisation": (str, 1), "catégorie-de-taille": (str, 1)}, "Commande": points_to_cards_command},

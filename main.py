@@ -2,6 +2,7 @@ from csv import DictReader
 import folium
 import os
 import math
+import matplotlib.pyplot as plt 
 
 from animation import *
 
@@ -29,6 +30,8 @@ def transform(string:str):
     """
     if string == "" or string.startswith("http"):
         return string
+    
+    string.strip()
 
     if string.isdigit():
         if string[0] == "-" and int(string) > 0:
@@ -50,18 +53,10 @@ def transform(string:str):
 
         try:
             res = int("".join(first_n)) + int("".join(last_n)) / 10 ** len(last_n)
-            if "0.61747" in "".join(string):
-                print(res)
         except ValueError:
-            if "0.61747" in string:
-                print(res, "error")
             return 0.0
-        if "0.61747" in "".join(string):
-            print(res, "first", string[1])
-        if string[0]. "-" and res > 0:
+        if string[0] == "-" and res > 0:
             res *= -1
-        if "0.61747" in "".join(string):
-            print(res, "second")
         return res 
     else:
         return string
@@ -71,10 +66,9 @@ def importer_table(fichier):
         u = []
         for dict in animate(list(DictReader(f, delimiter=";")), title=f"Importation de {fichier}", title_end=f"Importation de {fichier} terminée", char="circle"):
             for el in dict:
-                dict[el] = transform(dict[el])
+                dict[el] = dict[el]
             u.append(dict)
             print_anim()
-        print(u[0])
     return u
 
 def import_all():
@@ -313,7 +307,7 @@ def create_polygon(points, filtre=True):
 
 def create_zone(table, location_category, tooltip="Click Me!", popup="Test", fill_color="black", color="blue"):
     locations = []
-
+    
     for ligne in table:
         if not "," in ligne[location_category]:
             continue
@@ -378,7 +372,65 @@ def table_to_zone(table, category, color_category, localisation_category="Coordo
         points = donneesV10(table, [category], [zone], [])
         col = get_hex_color(values, zone, maximum)
 
-        create_zone(points, localisation_category, zone, fill_color=col, color=col)
+        create_zone(points, localisation_category, fill_color=col, color=col, popup=graph(tables, zone))
+        
+def graph(tables,
+          zone,
+          localisation_category="Région de l’établissement",
+          count_category="Effectif total des candidats pour une formation"):
+    """
+    Pour chaque table (année) dans `tables`, calcule la somme de `count_category`
+    pour la zone donnée, trace l'évolution année → total, et retourne un Popup.
+    """
+    # 1. Extraire les années et trier
+    data = []
+    for table_name, table in tables.items():
+        # on suppose que le nom de la table est "parcoursup_2022", "parcoursup_2023", etc.
+        if not table_name.startswith("parcoursup_"):
+            continue
+        try:
+            annee = int(table_name.split("_")[-1])
+        except ValueError:
+            continue
+
+        # 2. Somme des candidats dans la zone
+        total = 0
+        for rec in table:
+            if rec.get(localisation_category) == zone:
+                try:
+                    total += int(rec.get(count_category, 0))
+                except (TypeError, ValueError):
+                    pass
+
+        data.append((annee, total))
+
+    if not data:
+        # Pas de données → simple message
+        return folium.Popup(f"<i>Aucune donnée pour {zone}</i>", max_width=200)
+
+    # 3. Trier par année et séparer en deux listes
+    data.sort(key=lambda x: x[0])
+    années, totaux = zip(*data)
+
+    # 4. Créer le dossier des graphes
+    os.makedirs("graphes", exist_ok=True)
+    safe_zone = zone.replace(" ", "_").replace("/", "_")
+    filename = f"graphes/graph_{safe_zone}.png"
+
+    # 5. Tracer
+    plt.figure()
+    plt.plot(années, totaux, marker="o")
+    plt.title(f"{zone} — Candidatures Parcoursup")
+    plt.xlabel("Année")
+    plt.ylabel(count_category)
+    plt.xticks(années)
+    plt.tight_layout()
+    plt.savefig(filename)
+    plt.close()
+
+    # 6. Construire le Popup HTML
+    html = f'<img src="../{filename}" width="350"><br><small>Evolution {zone}</small>'
+    return folium.Popup(html, max_width=370)
 
 # Importer toutes les tables dans /ressources + initialiser les variables
 tables = import_all()

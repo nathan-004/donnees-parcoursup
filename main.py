@@ -90,10 +90,13 @@ def creer_categories(tables):
                 
     return categories
 
-def search_category(inp, categories):
+def search_category(inp, categories=None):
     """
     Retourne une liste des categories similaires à l'input
     """
+    if categories is None:
+        categories = CATEGORIES
+
     res = []
     
     for cat_name in categories:
@@ -153,12 +156,16 @@ def sort(table, category, reverse=True):
         print(f"Erreur lors du tri : {e}")
         return table
 
-def create_popup():
-    popup_html = '<a href="carte_autre.html" target="_blank">Voir une autre carte</a>'
-    popup = folium.Popup(popup_html, max_width=200)
+def create_popup(tables, zone_name, zone_part=""):
+    in_folder = not (zone_part == search_category("Région ")[0])
+    if zone_name == search_category("Académie", CATEGORIES):
+        return "test"
+    else:
+        popup_html = '<a href="carte_autre.html" target="_blank">Voir une autre carte</a>\n' + graph(tables, zone_name, in_folder=in_folder)
+    popup = folium.Popup(popup_html, max_width=370)
     return popup
 
-def points_to_cards(table, category, size_category, min_size=5, max_size=35):
+def points_to_cards(table, category, size_category, fg:folium.FeatureGroup, min_size=5, max_size=35):
     """
     category:str
         Categorie devant être un str
@@ -183,6 +190,8 @@ def points_to_cards(table, category, size_category, min_size=5, max_size=35):
                             fill=True,
                             popup=pop
                         ).add_to(fg)
+        
+    return fg
         
 def filtrer_localisation(table, categories, values):
     """
@@ -263,8 +272,8 @@ def filtrer_distance(points):
         if distances[p] <= seuil:
             new_points.append(p)
         else:
-            if fg is not None:
-                folium.CircleMarker(
+            pass
+            """folium.CircleMarker(
                     location=p,
                     radius=5,
                     color="red",
@@ -272,7 +281,7 @@ def filtrer_distance(points):
                     fill_color="red",
                     fill_opacity=0.6,
                     popup=f"Écarté : distance={distances[p]:.2f}",
-                ).add_to(fg)
+            ).add_to(fg)"""
 
     return new_points
 
@@ -305,7 +314,7 @@ def create_polygon(points, filtre=True):
 
     return new_result
 
-def create_zone(table, location_category, tooltip="Click Me!", popup="Test", fill_color="black", color="blue"):
+def create_zone(table, location_category, carte, tooltip="Click Me!", popup="Test", fill_color="black", color="blue"):
     locations = []
     
     for ligne in table:
@@ -326,6 +335,8 @@ def create_zone(table, location_category, tooltip="Click Me!", popup="Test", fil
         tooltip=tooltip,
     ).add_to(carte)
 
+    return carte
+
 def get_hex_color(values, zone, max_=None, lowest_color=(255, 255, 0), highest_color=(255, 0, 0)):
     if max_ is None:
         max_ = max(values.values())
@@ -341,7 +352,17 @@ def get_hex_color(values, zone, max_=None, lowest_color=(255, 255, 0), highest_c
 
     return hex_color
 
-def table_to_zone(table, category, color_category, localisation_category="Coordonnées GPS de la formation", exception_values=["", "Etranger"]):
+def table_to_zone(table, category, color_category, carte, fg, localisation_category="Coordonnées GPS de la formation", exception_values=["", "Etranger"]):
+    """
+    table:liste
+        Table à utiliser
+    category:str
+        Nom de la catégorie de zone
+    color_category:str
+        Nom de la catégorie qui rougit la couleur en fonction de sa valeur (integer)
+    carte
+    localisation_category:str
+    """
     localisations = uniticite(table, category, [category])
 
     values = {}
@@ -372,12 +393,15 @@ def table_to_zone(table, category, color_category, localisation_category="Coordo
         points = donneesV10(table, [category], [zone], [])
         col = get_hex_color(values, zone, maximum)
 
-        create_zone(points, localisation_category, fill_color=col, color=col, popup=graph(tables, zone))
+        carte = create_zone(points, localisation_category, carte,fill_color=col, color=col, popup=create_popup(tables, zone, category))
+
+    return carte
         
 def graph(tables,
           zone,
           localisation_category="Région de l’établissement",
-          count_category="Effectif total des candidats pour une formation"):
+          count_category="Effectif total des candidats pour une formation",
+          in_folder=True):
     """
     Pour chaque table (année) dans `tables`, calcule la somme de `count_category`
     pour la zone donnée, trace l'évolution année → total, et retourne un Popup.
@@ -429,8 +453,27 @@ def graph(tables,
     plt.close()
 
     # 6. Construire le Popup HTML
-    html = f'<img src="../{filename}" width="350"><br><small>Evolution {zone}</small>'
-    return folium.Popup(html, max_width=370)
+    if in_folder:
+        html = f'<img src="../{filename}" width="350"><br><small>Evolution {zone}</small>'
+    else:
+        html = f'<img src="{filename}" width="350"><br><small>Evolution {zone}</small>'
+    return html
+
+def creer_index(val_category):
+    """
+    Créer une carte contenant toutes les régions, toute la France, les couleurs seront en fonction de val_category
+    Et la sauvegarder comme carte.html
+    Carte d'origine
+    """
+
+    carte = folium.Map(location=location_start, zoom_start=location_zoom)
+    fg = folium.FeatureGroup(name="Régions", control=False).add_to(carte)
+
+    carte = table_to_zone(tables["parcoursup_"+default_year], "Région de l’établissement", "Effectif total des candidats pour une formation", carte, fg)
+
+    folium.LayerControl().add_to(carte)
+
+    carte.save("carte.html")
 
 # Importer toutes les tables dans /ressources + initialiser les variables
 tables = import_all()
@@ -446,8 +489,7 @@ print(search_category("académie", CATEGORIES))
 
 print("Nombre de lignes trouvées :", len(donneesV10(tables["parcoursup_" + default_year], ["\ufeffSession"], ["2024"], [])))
 
-carte = folium.Map(location=location_start, zoom_start=location_zoom)
-fg = folium.FeatureGroup(name="Icon collection", control=False).add_to(carte)
+val_cat = "Effectif total des candidats pour une formation"
 
 # ETABLISSEMENTS = uniticite(tables["parcoursup_"+default_year], "Code UAI de l'établissement")
 
@@ -459,10 +501,4 @@ fg = folium.FeatureGroup(name="Icon collection", control=False).add_to(carte)
 
 #points_to_cards(tables["parcoursup_"+default_year], "Coordonnées GPS de la formation", "Capacité de l’établissement par formation") # Affiche les formations par un cercle dont la taille change en fonction de la capacité de cet établissement
 
-table_to_zone(tables["parcoursup_"+default_year], "Région de l’établissement", "Effectif total des candidats pour une formation")
-
-folium.LayerControl().add_to(carte)
-
-filename = "cartes/" + "carte.html"
-
-carte.save(filename)
+creer_index(val_cat)

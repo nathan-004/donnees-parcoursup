@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_c449c06e217984c641265d036519b2fc {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_c449c06e217984c641265d036519b2fc" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_c449c06e217984c641265d036519b2fc = L.map(
+                "map_c449c06e217984c641265d036519b2fc",
+                {
+                    center: [46.8566, 2.3522],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 7,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_185c57e06c4ec2f956955a14fe6233fd = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_185c57e06c4ec2f956955a14fe6233fd.addTo(map_c449c06e217984c641265d036519b2fc);
+        
+    
+            var feature_group_ad4f4d22a3fdaa6da7838013397cb949 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            feature_group_ad4f4d22a3fdaa6da7838013397cb949.addTo(map_c449c06e217984c641265d036519b2fc);
+        
+    
+            var polygon_dfe0b2bf1957e1fe834afd5c13422f21 = L.polygon(
+                [[-12.934, 45.1506], [-12.8503, 45.105], [-12.716, 45.051], [-12.7034, 45.1226], [-12.7981, 45.2862], [-12.9143, 45.1953]],
+                {"bubblingMouseEvents": true, "color": "#ff0000", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_c449c06e217984c641265d036519b2fc);
+        
+    
+        var popup_bd2984e4350966dc712d148580931f89 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_d0abac547ea2604ee82b6163ec8f6b4d = $(`<div id="html_d0abac547ea2604ee82b6163ec8f6b4d" style="width: 100.0%; height: 100.0%;"><a href="Mayotte.html" target="_blank">Carte Département de l’établissement - Mayotte</a> <img src="../graphes/graph_Mayotte.png" width="350"><br><small>Evolution Mayotte</small></div>`)[0];
+                popup_bd2984e4350966dc712d148580931f89.setContent(html_d0abac547ea2604ee82b6163ec8f6b4d);
+            
+        
+
+        polygon_dfe0b2bf1957e1fe834afd5c13422f21.bindPopup(popup_bd2984e4350966dc712d148580931f89)
+        ;
+
+        
+    
+    
+            polygon_dfe0b2bf1957e1fe834afd5c13422f21.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var layer_control_540e894e10c9fd71eee5603f8f996666_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_185c57e06c4ec2f956955a14fe6233fd,
+                },
+                overlays :  {
+                },
+            };
+            let layer_control_540e894e10c9fd71eee5603f8f996666 = L.control.layers(
+                layer_control_540e894e10c9fd71eee5603f8f996666_layers.base_layers,
+                layer_control_540e894e10c9fd71eee5603f8f996666_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_c449c06e217984c641265d036519b2fc);
+
+        
+</script>
+</html>

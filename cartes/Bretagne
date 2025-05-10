@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_d249eeff7678f1781abcf0a3ff7dd8b4 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_d249eeff7678f1781abcf0a3ff7dd8b4" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_d249eeff7678f1781abcf0a3ff7dd8b4 = L.map(
+                "map_d249eeff7678f1781abcf0a3ff7dd8b4",
+                {
+                    center: [46.8566, 2.3522],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 7,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_ce8aba190c5a4ef7dfbb9ce99dd1f431 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_ce8aba190c5a4ef7dfbb9ce99dd1f431.addTo(map_d249eeff7678f1781abcf0a3ff7dd8b4);
+        
+    
+            var feature_group_4a362be5fb50c0d33ebaadc772ed9597 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            feature_group_4a362be5fb50c0d33ebaadc772ed9597.addTo(map_d249eeff7678f1781abcf0a3ff7dd8b4);
+        
+    
+            var polygon_15147a330ed076b14b7d86e6091f2c6f = L.polygon(
+                [[47.64462, -2.74638], [48.6253, -2.05765], [48.6571, -1.96914], [48.36759, -1.20077], [48.359, -1.19112], [48.11862, -1.2093], [47.9435, -1.23124], [47.6496, -2.08327], [47.6488, -2.09163]],
+                {"bubblingMouseEvents": true, "color": "#ff0000", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_d249eeff7678f1781abcf0a3ff7dd8b4);
+        
+    
+        var popup_ff546690cd9b937c66c00b893e03eb94 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_367075cdc0a4ec6db79dc869b8b07977 = $(`<div id="html_367075cdc0a4ec6db79dc869b8b07977" style="width: 100.0%; height: 100.0%;"><a href="Ille-et-Vilaine.html" target="_blank">Carte Département de l’établissement - Ille-et-Vilaine</a> <img src="../graphes/graph_Ille-et-Vilaine.png" width="350"><br><small>Evolution Ille-et-Vilaine</small></div>`)[0];
+                popup_ff546690cd9b937c66c00b893e03eb94.setContent(html_367075cdc0a4ec6db79dc869b8b07977);
+            
+        
+
+        polygon_15147a330ed076b14b7d86e6091f2c6f.bindPopup(popup_ff546690cd9b937c66c00b893e03eb94)
+        ;
+
+        
+    
+    
+            polygon_15147a330ed076b14b7d86e6091f2c6f.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var polygon_5934de1d281d8650e662dc57bd2170d5 = L.polygon(
+                [[47.5089, -3.12085], [47.7406, -3.38868], [47.7475, -3.3966], [47.7519, -3.39503], [48.0818, -2.97772], [48.0841, -2.97339], [47.9436, -2.13079], [47.6634, -2.464]],
+                {"bubblingMouseEvents": true, "color": "#ff7200", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7200", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_d249eeff7678f1781abcf0a3ff7dd8b4);
+        
+    
+        var popup_82fc761fe54f85cda9d968cf7a27b330 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_d7a6f4b6ff096dc7b44d346bdca88912 = $(`<div id="html_d7a6f4b6ff096dc7b44d346bdca88912" style="width: 100.0%; height: 100.0%;"><a href="Morbihan.html" target="_blank">Carte Département de l’établissement - Morbihan</a> <img src="../graphes/graph_Morbihan.png" width="350"><br><small>Evolution Morbihan</small></div>`)[0];
+                popup_82fc761fe54f85cda9d968cf7a27b330.setContent(html_d7a6f4b6ff096dc7b44d346bdca88912);
+            
+        
+
+        polygon_5934de1d281d8650e662dc57bd2170d5.bindPopup(popup_82fc761fe54f85cda9d968cf7a27b330)
+        ;
+
+        
+    
+    
+            polygon_5934de1d281d8650e662dc57bd2170d5.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var polygon_d624419a0f1fde0a8348e2be52ede599 = L.polygon(
+                [[48.1744, -2.75018], [48.2332, -3.30882], [48.2353, -3.3152], [48.72204, -3.46689], [48.73333, -3.46667], [48.7584, -3.45128], [48.7853, -3.23313], [48.784, -3.04708], [48.4633, -2.03575], [48.4464, -2.05052], [48.1902, -2.42488]],
+                {"bubblingMouseEvents": true, "color": "#ff8d00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff8d00", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_d249eeff7678f1781abcf0a3ff7dd8b4);
+        
+    
+        var popup_56fb8b4263b2f8a1af00e59c81ef9e47 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_2677ac6f275eb82b0d3454256189bc0a = $(`<div id="html_2677ac6f275eb82b0d3454256189bc0a" style="width: 100.0%; height: 100.0%;"><a href="Côtes-d'Armor.html" target="_blank">Carte Département de l’établissement - Côtes-d'Armor</a> <img src="../graphes/graph_Côtes-d'Armor.png" width="350"><br><small>Evolution Côtes-d'Armor</small></div>`)[0];
+                popup_56fb8b4263b2f8a1af00e59c81ef9e47.setContent(html_2677ac6f275eb82b0d3454256189bc0a);
+            
+        
+
+        polygon_d624419a0f1fde0a8348e2be52ede599.bindPopup(popup_56fb8b4263b2f8a1af00e59c81ef9e47)
+        ;
+
+        
+    
+    
+            polygon_d624419a0f1fde0a8348e2be52ede599.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var polygon_cfe09af76fba5c0be2a6b802cc35118b = L.polygon(
+                [[47.797, -4.27069], [48.36075, -4.56664], [48.4061, -4.52165], [48.5897, -4.3145], [48.72681, -3.98799], [48.6195, -3.84109], [48.2789, -3.54416], [47.8798, -3.53454]],
+                {"bubblingMouseEvents": true, "color": "#ff6500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff6500", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_d249eeff7678f1781abcf0a3ff7dd8b4);
+        
+    
+        var popup_e2880fc3c11a592292947e5cc09eac78 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_99214d9d8e020e9743ca4b45091f8733 = $(`<div id="html_99214d9d8e020e9743ca4b45091f8733" style="width: 100.0%; height: 100.0%;"><a href="Finistère.html" target="_blank">Carte Département de l’établissement - Finistère</a> <img src="../graphes/graph_Finistère.png" width="350"><br><small>Evolution Finistère</small></div>`)[0];
+                popup_e2880fc3c11a592292947e5cc09eac78.setContent(html_99214d9d8e020e9743ca4b45091f8733);
+            
+        
+
+        polygon_cfe09af76fba5c0be2a6b802cc35118b.bindPopup(popup_e2880fc3c11a592292947e5cc09eac78)
+        ;
+
+        
+    
+    
+            polygon_cfe09af76fba5c0be2a6b802cc35118b.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var layer_control_b075b15dc2ddbbd0f1f90ebd8e766da9_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_ce8aba190c5a4ef7dfbb9ce99dd1f431,
+                },
+                overlays :  {
+                },
+            };
+            let layer_control_b075b15dc2ddbbd0f1f90ebd8e766da9 = L.control.layers(
+                layer_control_b075b15dc2ddbbd0f1f90ebd8e766da9_layers.base_layers,
+                layer_control_b075b15dc2ddbbd0f1f90ebd8e766da9_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_d249eeff7678f1781abcf0a3ff7dd8b4);
+
+        
+</script>
+</html>

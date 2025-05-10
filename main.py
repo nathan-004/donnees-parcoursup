@@ -161,7 +161,8 @@ def create_popup(tables, zone_name, zone_part=""):
     if zone_name == search_category("Académie", CATEGORIES):
         return "test"
     else:
-        popup_html = '<a href="carte_autre.html" target="_blank">Voir une autre carte</a>\n' + graph(tables, zone_name, in_folder=in_folder)
+        lien = "cartes/" + zone_name if not in_folder else zone_name
+        popup_html = f'<a href="{lien+".html"}" target="_blank">Carte {zone_part} - {zone_name}</a>\n' + graph(tables, zone_name, in_folder=in_folder)
     popup = folium.Popup(popup_html, max_width=370)
     return popup
 
@@ -207,7 +208,7 @@ def filtrer_localisation(table, categories, values):
     
     return donneesV10(table, new_categories, values, [])
 
-def uniticite(table, category, resultats=[]):
+def uniticite(table, category:str, resultats=[]):
     """
     Regarde pour chaques éléments pour que chaques valeurs de category n'apparaissent qu'une seule fois
 
@@ -221,10 +222,14 @@ def uniticite(table, category, resultats=[]):
     new_table = []
     
     for ligne in animate(table):
-        if ligne[category] not in seen:
-            new_table.append({res: ligne[res] for res in resultats})
-            seen.add(ligne[category])
-        print_anim()
+        try:
+            if ligne[category] not in seen:
+                new_table.append({res: ligne[res] for res in resultats})
+                seen.add(ligne[category])
+            print_anim()
+        except:
+            print(ligne)
+            raise AssertionError
     
     return new_table
 
@@ -475,6 +480,26 @@ def creer_index(val_category):
 
     carte.save("carte.html")
 
+def creer_region(val_category):
+    """
+    Créer une carte pour chaques région
+    Contenant les zones en couleurs pour chaque département
+    """
+    regions = uniticite(tables["parcoursup_" + default_year], "Région de l’établissement", ["Région de l’établissement"]) # Table contenant une ligne pour chaque région 
+
+    for line in regions:
+        carte = folium.Map(location=location_start, zoom_start=location_zoom)
+        fg = folium.FeatureGroup(name="Régions", control=False).add_to(carte)
+
+        region_name = line["Région de l’établissement"]
+        region = filtrer_localisation(tables["parcoursup_" + default_year], ["Région"], [region_name])
+
+        carte = table_to_zone(region, "Département de l’établissement", "Effectif total des candidats pour une formation", carte, fg)
+
+        folium.LayerControl().add_to(carte)
+
+        carte.save("cartes/"+region_name+".html")
+
 # Importer toutes les tables dans /ressources + initialiser les variables
 tables = import_all()
 
@@ -502,3 +527,4 @@ val_cat = "Effectif total des candidats pour une formation"
 #points_to_cards(tables["parcoursup_"+default_year], "Coordonnées GPS de la formation", "Capacité de l’établissement par formation") # Affiche les formations par un cercle dont la taille change en fonction de la capacité de cet établissement
 
 creer_index(val_cat)
+creer_region(val_cat)

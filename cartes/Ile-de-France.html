@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_96096617322328b0e411a4b0d1769a86 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_96096617322328b0e411a4b0d1769a86" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_96096617322328b0e411a4b0d1769a86 = L.map(
+                "map_96096617322328b0e411a4b0d1769a86",
+                {
+                    center: [46.8566, 2.3522],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 7,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_1780b4129e8e949e8754e0ab68d51157 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_1780b4129e8e949e8754e0ab68d51157.addTo(map_96096617322328b0e411a4b0d1769a86);
+        
+    
+            var feature_group_32fab318e898b0b60432450eca6a7ef0 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            feature_group_32fab318e898b0b60432450eca6a7ef0.addTo(map_96096617322328b0e411a4b0d1769a86);
+        
+    
+            var polygon_5f69794b91df780b1b044e0c2b979234 = L.polygon(
+                [[48.72205, 2.4526], [48.7613, 2.3285], [48.78821, 2.32422], [48.8047, 2.32543], [48.8488, 2.42725], [48.8503, 2.43161], [48.8559, 2.48675], [48.7874, 2.57994], [48.7444, 2.51049]],
+                {"bubblingMouseEvents": true, "color": "#ff3c00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff3c00", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_96096617322328b0e411a4b0d1769a86);
+        
+    
+        var popup_22c1442ed486a619f0a3b6a4dcae9cf7 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_a366ad886682a61f9d25f58a14110b99 = $(`<div id="html_a366ad886682a61f9d25f58a14110b99" style="width: 100.0%; height: 100.0%;"><a href="Val-de-Marne.html" target="_blank">Carte Département de l’établissement - Val-de-Marne</a> <img src="../graphes/graph_Val-de-Marne.png" width="350"><br><small>Evolution Val-de-Marne</small></div>`)[0];
+                popup_22c1442ed486a619f0a3b6a4dcae9cf7.setContent(html_a366ad886682a61f9d25f58a14110b99);
+            
+        
+
+        polygon_5f69794b91df780b1b044e0c2b979234.bindPopup(popup_22c1442ed486a619f0a3b6a4dcae9cf7)
+        ;
+
+        
+    
+    
+            polygon_5f69794b91df780b1b044e0c2b979234.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var polygon_a78e0e14e3aed79a24befb2ca45b2bbb = L.polygon(
+                [[48.83982, 2.58357], [48.8525, 2.42476], [48.867, 2.35463], [48.9031, 2.33387], [48.9136, 2.3282], [48.9551, 2.32084], [48.9575, 2.34], [48.9757, 2.56077], [48.9487, 2.57963]],
+                {"bubblingMouseEvents": true, "color": "#ff0300", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0300", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_96096617322328b0e411a4b0d1769a86);
+        
+    
+        var popup_311a1476261f7a6086c978a9d6797756 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_7fdd47fda9ae547a5c449b18264e0d17 = $(`<div id="html_7fdd47fda9ae547a5c449b18264e0d17" style="width: 100.0%; height: 100.0%;"><a href="Seine-Saint-Denis.html" target="_blank">Carte Département de l’établissement - Seine-Saint-Denis</a> <img src="../graphes/graph_Seine-Saint-Denis.png" width="350"><br><small>Evolution Seine-Saint-Denis</small></div>`)[0];
+                popup_311a1476261f7a6086c978a9d6797756.setContent(html_7fdd47fda9ae547a5c449b18264e0d17);
+            
+        
+
+        polygon_a78e0e14e3aed79a24befb2ca45b2bbb.bindPopup(popup_311a1476261f7a6086c978a9d6797756)
+        ;
+
+        
+    
+    
+            polygon_a78e0e14e3aed79a24befb2ca45b2bbb.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var polygon_cb4b0cda2e9eb3fe82366a898be7baf3 = L.polygon(
+                [[46.9909, 3.16285], [48.83463, 2.24751], [48.8703, 2.27413], [48.8862, 2.28769], [48.89268, 2.3011], [48.8975, 2.31987], [48.9001, 2.34687], [48.9001, 2.34691], [48.89604, 2.38076], [48.8383, 2.59222]],
+                {"bubblingMouseEvents": true, "color": "#ff0000", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_96096617322328b0e411a4b0d1769a86);
+        
+    
+        var popup_984793c1e94d94a7e6a0964271b86b17 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_1899c1f49fa8aec5d3c10350c2b8e64b = $(`<div id="html_1899c1f49fa8aec5d3c10350c2b8e64b" style="width: 100.0%; height: 100.0%;"><a href="Paris.html" target="_blank">Carte Département de l’établissement - Paris</a> <img src="../graphes/graph_Paris.png" width="350"><br><small>Evolution Paris</small></div>`)[0];
+                popup_984793c1e94d94a7e6a0964271b86b17.setContent(html_1899c1f49fa8aec5d3c10350c2b8e64b);
+            
+        
+
+        polygon_cb4b0cda2e9eb3fe82366a898be7baf3.bindPopup(popup_984793c1e94d94a7e6a0964271b86b17)
+        ;
+
+        
+    
+    
+            polygon_cb4b0cda2e9eb3fe82366a898be7baf3.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var polygon_4466d6cfd0f0aaef8d42cd71fdaf9d8f = L.polygon(
+                [[48.73495, 2.30667], [48.7453, 2.28783], [48.7678, 2.25489], [48.8439, 2.15781], [48.9033, 2.19298], [48.9758, 2.27669], [48.941, 2.32691], [48.8561, 2.43373]],
+                {"bubblingMouseEvents": true, "color": "#ff1300", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff1300", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_96096617322328b0e411a4b0d1769a86);
+        
+    
+        var popup_d6bffeb236c43b8370e2c1639837bfae = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_0933217a2591d469b01d4965a67f235d = $(`<div id="html_0933217a2591d469b01d4965a67f235d" style="width: 100.0%; height: 100.0%;"><a href="Hauts-de-Seine.html" target="_blank">Carte Département de l’établissement - Hauts-de-Seine</a> <img src="../graphes/graph_Hauts-de-Seine.png" width="350"><br><small>Evolution Hauts-de-Seine</small></div>`)[0];
+                popup_d6bffeb236c43b8370e2c1639837bfae.setContent(html_0933217a2591d469b01d4965a67f235d);
+            
+        
+
+        polygon_4466d6cfd0f0aaef8d42cd71fdaf9d8f.bindPopup(popup_d6bffeb236c43b8370e2c1639837bfae)
+        ;
+
+        
+    
+    
+            polygon_4466d6cfd0f0aaef8d42cd71fdaf9d8f.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var polygon_f5d11c148c800ed6fdfeb8282637a3ff = L.polygon(
+                [[48.2607, 2.71524], [48.6132, 2.53886], [48.8445, 2.58584], [49.0479, 2.66798], [49.02083, 2.96235], [48.8138, 3.15228], [48.5328, 3.37216]],
+                {"bubblingMouseEvents": true, "color": "#ff8700", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff8700", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_96096617322328b0e411a4b0d1769a86);
+        
+    
+        var popup_4e8bf07ebd699de74346f4da7e5310c3 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_f7c4a670be58a1d8feec58cd4f60e6d2 = $(`<div id="html_f7c4a670be58a1d8feec58cd4f60e6d2" style="width: 100.0%; height: 100.0%;"><a href="Seine-et-Marne.html" target="_blank">Carte Département de l’établissement - Seine-et-Marne</a> <img src="../graphes/graph_Seine-et-Marne.png" width="350"><br><small>Evolution Seine-et-Marne</small></div>`)[0];
+                popup_4e8bf07ebd699de74346f4da7e5310c3.setContent(html_f7c4a670be58a1d8feec58cd4f60e6d2);
+            
+        
+
+        polygon_f5d11c148c800ed6fdfeb8282637a3ff.bindPopup(popup_4e8bf07ebd699de74346f4da7e5310c3)
+        ;
+
+        
+    
+    
+            polygon_f5d11c148c800ed6fdfeb8282637a3ff.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var polygon_a4a5fea95be1eba451e1afe6dea2d23d = L.polygon(
+                [[48.6397, 1.82486], [48.9658, 1.67853], [48.99785, 1.6773], [49.0387, 2.07414], [48.9428, 2.16025], [48.7826, 2.21773]],
+                {"bubblingMouseEvents": true, "color": "#ff4400", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff4400", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_96096617322328b0e411a4b0d1769a86);
+        
+    
+        var popup_d3af278200d0393948d8285a450c583d = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_195f8e5b3745f7b2d582d7b818445e3c = $(`<div id="html_195f8e5b3745f7b2d582d7b818445e3c" style="width: 100.0%; height: 100.0%;"><a href="Yvelines.html" target="_blank">Carte Département de l’établissement - Yvelines</a> <img src="../graphes/graph_Yvelines.png" width="350"><br><small>Evolution Yvelines</small></div>`)[0];
+                popup_d3af278200d0393948d8285a450c583d.setContent(html_195f8e5b3745f7b2d582d7b818445e3c);
+            
+        
+
+        polygon_a4a5fea95be1eba451e1afe6dea2d23d.bindPopup(popup_d3af278200d0393948d8285a450c583d)
+        ;
+
+        
+    
+    
+            polygon_a4a5fea95be1eba451e1afe6dea2d23d.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var polygon_9d897567e60415f6ebb51d2d40eef79a = L.polygon(
+                [[48.4357, 2.15111], [48.5345, 1.99187], [48.7, 2.09689], [48.7003, 2.09753], [48.7312, 2.25247], [48.7335, 2.26573], [48.7051, 2.45368], [48.6945, 2.48994], [48.6, 2.48333], [48.4866, 2.3441]],
+                {"bubblingMouseEvents": true, "color": "#ff1f00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff1f00", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_96096617322328b0e411a4b0d1769a86);
+        
+    
+        var popup_89cfd27bac7926d707a0a3817f08321e = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_0c59d6f3351aa5d77de4d6fbccdb0572 = $(`<div id="html_0c59d6f3351aa5d77de4d6fbccdb0572" style="width: 100.0%; height: 100.0%;"><a href="Essonne.html" target="_blank">Carte Département de l’établissement - Essonne</a> <img src="../graphes/graph_Essonne.png" width="350"><br><small>Evolution Essonne</small></div>`)[0];
+                popup_89cfd27bac7926d707a0a3817f08321e.setContent(html_0c59d6f3351aa5d77de4d6fbccdb0572);
+            
+        
+
+        polygon_9d897567e60415f6ebb51d2d40eef79a.bindPopup(popup_89cfd27bac7926d707a0a3817f08321e)
+        ;
+
+        
+    
+    
+            polygon_9d897567e60415f6ebb51d2d40eef79a.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var polygon_083abf2750da3dc0083bea92c6ea2612 = L.polygon(
+                [[48.8265, 2.27577], [49.0107, 2.02532], [49.0528, 2.01127], [49.1423, 2.28554]],
+                {"bubblingMouseEvents": true, "color": "#ff6d00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff6d00", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_96096617322328b0e411a4b0d1769a86);
+        
+    
+        var popup_172138ebb5673ae356e1531fcf59ef36 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_37f16d83321f7b95d2adaf3cbaeee36d = $(`<div id="html_37f16d83321f7b95d2adaf3cbaeee36d" style="width: 100.0%; height: 100.0%;"><a href="Val-d'oise.html" target="_blank">Carte Département de l’établissement - Val-d'oise</a> <img src="../graphes/graph_Val-d'oise.png" width="350"><br><small>Evolution Val-d'oise</small></div>`)[0];
+                popup_172138ebb5673ae356e1531fcf59ef36.setContent(html_37f16d83321f7b95d2adaf3cbaeee36d);
+            
+        
+
+        polygon_083abf2750da3dc0083bea92c6ea2612.bindPopup(popup_172138ebb5673ae356e1531fcf59ef36)
+        ;
+
+        
+    
+    
+            polygon_083abf2750da3dc0083bea92c6ea2612.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var layer_control_5f2c70a88fb0a90a23bb831fca8e3f9b_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_1780b4129e8e949e8754e0ab68d51157,
+                },
+                overlays :  {
+                },
+            };
+            let layer_control_5f2c70a88fb0a90a23bb831fca8e3f9b = L.control.layers(
+                layer_control_5f2c70a88fb0a90a23bb831fca8e3f9b_layers.base_layers,
+                layer_control_5f2c70a88fb0a90a23bb831fca8e3f9b_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_96096617322328b0e411a4b0d1769a86);
+
+        
+</script>
+</html>

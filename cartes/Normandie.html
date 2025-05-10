@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_05bb0aca60bda623bb07ccbc6b3ba758 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_05bb0aca60bda623bb07ccbc6b3ba758" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_05bb0aca60bda623bb07ccbc6b3ba758 = L.map(
+                "map_05bb0aca60bda623bb07ccbc6b3ba758",
+                {
+                    center: [46.8566, 2.3522],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 7,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_9da6f20ba6ef1e4913edfeb122a9443c = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_9da6f20ba6ef1e4913edfeb122a9443c.addTo(map_05bb0aca60bda623bb07ccbc6b3ba758);
+        
+    
+            var feature_group_088ecfbb280bc822c20051c71d6d0189 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            feature_group_088ecfbb280bc822c20051c71d6d0189.addTo(map_05bb0aca60bda623bb07ccbc6b3ba758);
+        
+    
+            var polygon_fcb3c9bf336e8070f598cc7b66eb1df3 = L.polygon(
+                [[49.285, 1.00474], [49.4885, 0.10547], [49.50134, 0.08982], [49.5265, 0.09796], [49.7632, 0.37103], [50.0526, 1.41687], [49.6172, 1.53764], [49.2907, 1.0161]],
+                {"bubblingMouseEvents": true, "color": "#ff0000", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff0000", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_05bb0aca60bda623bb07ccbc6b3ba758);
+        
+    
+        var popup_41af9bdde5786ed31c62a8fc42d17208 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_f3ce9f173525f65d5bc96f02c2bc0dbf = $(`<div id="html_f3ce9f173525f65d5bc96f02c2bc0dbf" style="width: 100.0%; height: 100.0%;"><a href="Seine-Maritime.html" target="_blank">Carte Département de l’établissement - Seine-Maritime</a> <img src="../graphes/graph_Seine-Maritime.png" width="350"><br><small>Evolution Seine-Maritime</small></div>`)[0];
+                popup_41af9bdde5786ed31c62a8fc42d17208.setContent(html_f3ce9f173525f65d5bc96f02c2bc0dbf);
+            
+        
+
+        polygon_fcb3c9bf336e8070f598cc7b66eb1df3.bindPopup(popup_41af9bdde5786ed31c62a8fc42d17208)
+        ;
+
+        
+    
+    
+            polygon_fcb3c9bf336e8070f598cc7b66eb1df3.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var polygon_2321f59ae68b95f60c61c858b564f2e4 = L.polygon(
+                [[48.568, -1.09526], [48.6769, -1.35867], [48.8264, -1.57828], [48.8404, -1.59175], [49.6338, -1.64833], [49.6405, -1.64434], [49.6554, -1.56916], [49.3047, -1.23954], [49.1146, -1.08497], [48.6492, -0.94155]],
+                {"bubblingMouseEvents": true, "color": "#ff9900", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff9900", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_05bb0aca60bda623bb07ccbc6b3ba758);
+        
+    
+        var popup_fb68a8c19660e7a7cff7216f32ea5492 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_2f6fad920c30f94376bce55bf889e634 = $(`<div id="html_2f6fad920c30f94376bce55bf889e634" style="width: 100.0%; height: 100.0%;"><a href="Manche.html" target="_blank">Carte Département de l’établissement - Manche</a> <img src="../graphes/graph_Manche.png" width="350"><br><small>Evolution Manche</small></div>`)[0];
+                popup_fb68a8c19660e7a7cff7216f32ea5492.setContent(html_2f6fad920c30f94376bce55bf889e634);
+            
+        
+
+        polygon_2321f59ae68b95f60c61c858b564f2e4.bindPopup(popup_fb68a8c19660e7a7cff7216f32ea5492)
+        ;
+
+        
+    
+    
+            polygon_2321f59ae68b95f60c61c858b564f2e4.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var polygon_860977e74bd5370100d0a84dc3f1dcde = L.polygon(
+                [[48.4169, 0.08947], [48.5927, -0.64212], [48.7535, -0.5719], [48.7659, 0.61275], [48.7579, 0.63694], [48.5133, 0.55289]],
+                {"bubblingMouseEvents": true, "color": "#ff9a00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff9a00", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_05bb0aca60bda623bb07ccbc6b3ba758);
+        
+    
+        var popup_6de97d365c7e52ec05b9ecdc975d906a = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_43926d5f5f620500a07d4864d30363e2 = $(`<div id="html_43926d5f5f620500a07d4864d30363e2" style="width: 100.0%; height: 100.0%;"><a href="Orne.html" target="_blank">Carte Département de l’établissement - Orne</a> <img src="../graphes/graph_Orne.png" width="350"><br><small>Evolution Orne</small></div>`)[0];
+                popup_6de97d365c7e52ec05b9ecdc975d906a.setContent(html_43926d5f5f620500a07d4864d30363e2);
+            
+        
+
+        polygon_860977e74bd5370100d0a84dc3f1dcde.bindPopup(popup_6de97d365c7e52ec05b9ecdc975d906a)
+        ;
+
+        
+    
+    
+            polygon_860977e74bd5370100d0a84dc3f1dcde.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var polygon_221b87b7e80459202dea3a3835c0e209 = L.polygon(
+                [[48.8391, 1.00053], [49.0851, 0.5935], [49.3516, 0.49447], [49.3502, 0.52395], [49.2852, 1.78016], [49.0813, 1.47659]],
+                {"bubblingMouseEvents": true, "color": "#ff8f00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff8f00", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_05bb0aca60bda623bb07ccbc6b3ba758);
+        
+    
+        var popup_dd4c810d47da3dc32fa440a8c7956192 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_caf47cc99430d383ccb08c4b3b95c0ae = $(`<div id="html_caf47cc99430d383ccb08c4b3b95c0ae" style="width: 100.0%; height: 100.0%;"><a href="Eure.html" target="_blank">Carte Département de l’établissement - Eure</a> <img src="../graphes/graph_Eure.png" width="350"><br><small>Evolution Eure</small></div>`)[0];
+                popup_dd4c810d47da3dc32fa440a8c7956192.setContent(html_caf47cc99430d383ccb08c4b3b95c0ae);
+            
+        
+
+        polygon_221b87b7e80459202dea3a3835c0e209.bindPopup(popup_dd4c810d47da3dc32fa440a8c7956192)
+        ;
+
+        
+    
+    
+            polygon_221b87b7e80459202dea3a3835c0e209.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var polygon_271b4e9c556ac73de1e14120bf885802 = L.polygon(
+                [[48.8378, -0.88848], [49.2843, -0.70974], [49.3637, 0.07454], [49.1534, 0.22909], [49.1453, 0.23307], [48.9883, -0.00522], [48.8939, -0.19449], [48.8909, -0.20443]],
+                {"bubblingMouseEvents": true, "color": "#ff2300", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff2300", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_05bb0aca60bda623bb07ccbc6b3ba758);
+        
+    
+        var popup_af40a357e8a15f5c39822eeaaec4e836 = L.popup({
+  "maxWidth": 370,
+});
+
+        
+            
+                var html_e986644c2c98f18b99761756d08e6482 = $(`<div id="html_e986644c2c98f18b99761756d08e6482" style="width: 100.0%; height: 100.0%;"><a href="Calvados.html" target="_blank">Carte Département de l’établissement - Calvados</a> <img src="../graphes/graph_Calvados.png" width="350"><br><small>Evolution Calvados</small></div>`)[0];
+                popup_af40a357e8a15f5c39822eeaaec4e836.setContent(html_e986644c2c98f18b99761756d08e6482);
+            
+        
+
+        polygon_271b4e9c556ac73de1e14120bf885802.bindPopup(popup_af40a357e8a15f5c39822eeaaec4e836)
+        ;
+
+        
+    
+    
+            polygon_271b4e9c556ac73de1e14120bf885802.bindTooltip(
+                `<div>
+                     Click Me!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var layer_control_073a6644890a5da80d90ddcbac5d90dc_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_9da6f20ba6ef1e4913edfeb122a9443c,
+                },
+                overlays :  {
+                },
+            };
+            let layer_control_073a6644890a5da80d90ddcbac5d90dc = L.control.layers(
+                layer_control_073a6644890a5da80d90ddcbac5d90dc_layers.base_layers,
+                layer_control_073a6644890a5da80d90ddcbac5d90dc_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_05bb0aca60bda623bb07ccbc6b3ba758);
+
+        
+</script>
+</html>

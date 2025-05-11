@@ -158,11 +158,12 @@ def sort(table, category, reverse=True):
 
 def create_popup(tables, zone_name, zone_part=""):
     in_folder = not (zone_part == search_category("Région ")[0])
-    if zone_name == search_category("Académie", CATEGORIES):
-        return "test"
+    if zone_name == search_category("département ", CATEGORIES):
+        lien = "cartes/" + zone_name if not in_folder else zone_name
+        popup_html = f'{graph(tables, zone_name, zone_part, in_folder=in_folder)}'
     else:
         lien = "cartes/" + zone_name if not in_folder else zone_name
-        popup_html = f'<a href="{lien+".html"}" target="_blank">Carte {zone_part} - {zone_name}</a>\n' + graph(tables, zone_name, in_folder=in_folder)
+        popup_html = f'<a href="{lien+".html"}" target="_blank">Carte {zone_part} - {zone_name}</a>\n' + graph(tables, zone_name, zone_part, in_folder=in_folder)
     popup = folium.Popup(popup_html, max_width=370)
     return popup
 
@@ -178,13 +179,14 @@ def points_to_cards(table, category, size_category, fg:folium.FeatureGroup, min_
 
     table_sort = sort(table, size_category)
     max_, min_ = int(table_sort[0][size_category]), int(table[-1][size_category])
+    CUR_CAT = "Département de l’établissement"
 
     for l in animate(table, title="Placement des points sur la carte", title_end="Points placés", char="block"):
         print_anim()
         if not "," in l[category]:
             continue 
         x, y = eval(l[category])
-        pop = create_popup(l.copy())
+        pop = create_popup(tables, l[CUR_CAT], CUR_CAT)
 
         folium.CircleMarker(location=(x, y),
                             radius=min_size + (int(l[size_category]) * (max_size - min_size) / max_),
@@ -485,7 +487,12 @@ def creer_region(val_category):
     Créer une carte pour chaques région
     Contenant les zones en couleurs pour chaque département
     """
+    global C, A
+
     regions = uniticite(tables["parcoursup_" + default_year], "Région de l’établissement", ["Région de l’établissement"]) # Table contenant une ligne pour chaque région 
+
+    C = 5  # Constante de coeff maximum dans la fonction filtrer_distance
+    A = 0.25  # Taux de décroissance de la courbe
 
     for line in regions:
         carte = folium.Map(location=location_start, zoom_start=location_zoom)
@@ -499,6 +506,26 @@ def creer_region(val_category):
         folium.LayerControl().add_to(carte)
 
         carte.save("cartes/"+region_name+".html")
+
+def creer_departement(val_category):
+    """
+    Créer une carte pour montrer les établissements dans un département dont la taille change en fonction de val_category
+    """
+    departements = uniticite(tables["parcoursup_" + default_year], "Département de l’établissement", ["Département de l’établissement"]) # Table contenant une ligne pour chaque département 
+
+    for line in departements:
+        carte = folium.Map(location=location_start, zoom_start=location_zoom)
+        fg = folium.FeatureGroup(name="Départements", control=False).add_to(carte)
+
+        departement_name = line["Département de l’établissement"]
+        departement = filtrer_localisation(tables["parcoursup_" + default_year], ["Département "], [departement_name])
+
+        fg = points_to_cards(departement, "Coordonnées GPS de la formation", "Effectif total des candidats pour une formation", fg)
+
+        folium.LayerControl().add_to(carte)
+
+        carte.save("cartes/"+departement_name+".html")
+
 
 # Importer toutes les tables dans /ressources + initialiser les variables
 tables = import_all()
@@ -528,3 +555,4 @@ val_cat = "Effectif total des candidats pour une formation"
 
 creer_index(val_cat)
 creer_region(val_cat)
+creer_departement(val_cat)

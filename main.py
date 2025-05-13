@@ -44,10 +44,11 @@ def transform(string:str):
     elif "," in string:
         string = string.split(",")
         return [transform(el) for el in string]
-    elif "." in string in string:
-        char = "."
-        string = list(string)
-        # Enlever expaces
+    elif "." in string:
+        try:
+            return float(string)
+        except ValueError:
+            return string
 
         first_n, last_n = string[:string.index(char)], string[string.index(char)+1:]
 
@@ -66,9 +67,10 @@ def importer_table(fichier):
         u = []
         for dict in animate(list(DictReader(f, delimiter=";")), title=f"Importation de {fichier}", title_end=f"Importation de {fichier} terminée", char="circle"):
             for el in dict:
-                dict[el] = dict[el]
+                dict[el] = transform(dict[el])
             u.append(dict)
             print_anim()
+    print(u[0])
     return u
 
 def import_all():
@@ -183,9 +185,9 @@ def points_to_cards(table, category, size_category, fg:folium.FeatureGroup, min_
 
     for l in animate(table, title="Placement des points sur la carte", title_end="Points placés", char="block"):
         print_anim()
-        if not "," in l[category]:
+        if type(l[category]) != list:
             continue 
-        x, y = eval(l[category])
+        x, y = l[category]
         pop = create_popup(tables, l[CUR_CAT], CUR_CAT)
 
         folium.CircleMarker(location=(x, y),
@@ -322,14 +324,19 @@ def create_polygon(points, filtre=True):
     return new_result
 
 def create_zone(table, location_category, carte, tooltip="Click Me!", popup="Test", fill_color="black", color="blue"):
+    
     locations = []
     
     for ligne in table:
-        if not "," in ligne[location_category]:
+        if type(ligne[location_category]) != list:
+            print(ligne[location_category])
             continue
-        locations.append(eval(ligne[location_category]))
-
+        if len(ligne[location_category]) == 0:
+            continue 
+        locations.append((ligne[location_category][0], ligne[location_category][0]))
+    print(locations)
     locations = create_polygon(locations)
+    print(locations)
     
     folium.Polygon(
         locations=locations,
@@ -476,7 +483,7 @@ def creer_index(val_category):
     carte = folium.Map(location=location_start, zoom_start=location_zoom)
     fg = folium.FeatureGroup(name="Régions", control=False).add_to(carte)
 
-    carte = table_to_zone(tables["parcoursup_"+default_year], "Région de l’établissement", "Effectif total des candidats pour une formation", carte, fg)
+    carte = table_to_zone(tables["parcoursup_"+default_year], "Région de l’établissement", val_cat, carte, fg)
 
     folium.LayerControl().add_to(carte)
 
@@ -501,7 +508,7 @@ def creer_region(val_category):
         region_name = line["Région de l’établissement"]
         region = filtrer_localisation(tables["parcoursup_" + default_year], ["Région"], [region_name])
 
-        carte = table_to_zone(region, "Département de l’établissement", "Effectif total des candidats pour une formation", carte, fg)
+        carte = table_to_zone(region, "Département de l’établissement", val_cat, carte, fg)
 
         folium.LayerControl().add_to(carte)
 
@@ -520,7 +527,7 @@ def creer_departement(val_category):
         departement_name = line["Département de l’établissement"]
         departement = filtrer_localisation(tables["parcoursup_" + default_year], ["Département "], [departement_name])
 
-        fg = points_to_cards(departement, "Coordonnées GPS de la formation", "Effectif total des candidats pour une formation", fg)
+        fg = points_to_cards(departement, "Coordonnées GPS de la formation", val_category, fg)
 
         folium.LayerControl().add_to(carte)
 
@@ -541,7 +548,7 @@ print(search_category("académie", CATEGORIES))
 
 print("Nombre de lignes trouvées :", len(donneesV10(tables["parcoursup_" + default_year], ["\ufeffSession"], ["2024"], [])))
 
-val_cat = "Effectif total des candidats pour une formation"
+val_cat = "% d’admis dont filles"
 
 # ETABLISSEMENTS = uniticite(tables["parcoursup_"+default_year], "Code UAI de l'établissement")
 
@@ -556,3 +563,5 @@ val_cat = "Effectif total des candidats pour une formation"
 creer_index(val_cat)
 creer_region(val_cat)
 creer_departement(val_cat)
+
+# https://data.smartidf.services/explore/dataset/contours-des-departements-francais-issus-dopenstreetmap/api/?flg=fr-fr

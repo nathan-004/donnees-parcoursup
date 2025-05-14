@@ -44,11 +44,10 @@ def transform(string:str):
     elif "," in string:
         string = string.split(",")
         return [transform(el) for el in string]
-    elif "." in string:
-        try:
-            return float(string)
-        except ValueError:
-            return string
+    elif "." in string in string:
+        char = "."
+        string = list(string)
+        # Enlever expaces
 
         first_n, last_n = string[:string.index(char)], string[string.index(char)+1:]
 
@@ -67,10 +66,9 @@ def importer_table(fichier):
         u = []
         for dict in animate(list(DictReader(f, delimiter=";")), title=f"Importation de {fichier}", title_end=f"Importation de {fichier} terminée", char="circle"):
             for el in dict:
-                dict[el] = transform(dict[el])
+                dict[el] = dict[el]
             u.append(dict)
             print_anim()
-    print(u[0])
     return u
 
 def import_all():
@@ -185,9 +183,9 @@ def points_to_cards(table, category, size_category, fg:folium.FeatureGroup, min_
 
     for l in animate(table, title="Placement des points sur la carte", title_end="Points placés", char="block"):
         print_anim()
-        if type(l[category]) != list:
+        if not "," in l[category]:
             continue 
-        x, y = l[category]
+        x, y = eval(l[category])
         pop = create_popup(tables, l[CUR_CAT], CUR_CAT)
 
         folium.CircleMarker(location=(x, y),
@@ -324,19 +322,14 @@ def create_polygon(points, filtre=True):
     return new_result
 
 def create_zone(table, location_category, carte, tooltip="Click Me!", popup="Test", fill_color="black", color="blue"):
-    
     locations = []
     
     for ligne in table:
-        if type(ligne[location_category]) != list:
-            print(ligne[location_category])
+        if not "," in ligne[location_category]:
             continue
-        if len(ligne[location_category]) == 0:
-            continue 
-        locations.append((ligne[location_category][0], ligne[location_category][0]))
-    print(locations)
+        locations.append(eval(ligne[location_category]))
+
     locations = create_polygon(locations)
-    print(locations)
     
     folium.Polygon(
         locations=locations,
@@ -392,7 +385,7 @@ def table_to_zone(table, category, color_category, carte, fg, localisation_categ
         somme = 0
 
         for idx, el in enumerate(points):
-            somme += int(el[color_category])
+            somme += float(el[color_category])
 
         values[zone] = somme / (idx + 1)
 
@@ -483,7 +476,7 @@ def creer_index(val_category):
     carte = folium.Map(location=location_start, zoom_start=location_zoom)
     fg = folium.FeatureGroup(name="Régions", control=False).add_to(carte)
 
-    carte = table_to_zone(tables["parcoursup_"+default_year], "Région de l’établissement", val_cat, carte, fg)
+    carte = table_to_zone(tables["parcoursup_"+default_year], "Région de l’établissement", val_category, carte, fg)
 
     folium.LayerControl().add_to(carte)
 
@@ -508,7 +501,7 @@ def creer_region(val_category):
         region_name = line["Région de l’établissement"]
         region = filtrer_localisation(tables["parcoursup_" + default_year], ["Région"], [region_name])
 
-        carte = table_to_zone(region, "Département de l’établissement", val_cat, carte, fg)
+        carte = table_to_zone(region, "Département de l’établissement", val_category, carte, fg)
 
         folium.LayerControl().add_to(carte)
 
@@ -563,5 +556,3 @@ val_cat = "% d’admis dont filles"
 creer_index(val_cat)
 creer_region(val_cat)
 creer_departement(val_cat)
-
-# https://data.smartidf.services/explore/dataset/contours-des-departements-francais-issus-dopenstreetmap/api/?flg=fr-fr

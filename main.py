@@ -178,7 +178,7 @@ def points_to_cards(table, category, size_category, fg:folium.FeatureGroup, min_
     """
 
     table_sort = sort(table, size_category)
-    max_, min_ = int(table_sort[0][size_category]), int(table[-1][size_category])
+    max_, min_ = float(table_sort[0][size_category]), int(table[-1][size_category])
     CUR_CAT = "Département de l’établissement"
 
     for l in animate(table, title="Placement des points sur la carte", title_end="Points placés", char="block"):
@@ -407,12 +407,15 @@ def table_to_zone(table, category, color_category, carte, fg, localisation_categ
 def graph(tables,
           zone,
           localisation_category="Région de l’établissement",
-          count_category="Effectif total des candidats pour une formation",
+          count_category=None,
           in_folder=True):
     """
     Pour chaque table (année) dans `tables`, calcule la somme de `count_category`
     pour la zone donnée, trace l'évolution année → total, et retourne un Popup.
     """
+    if count_category is None:
+        count_category = val_cat
+
     # 1. Extraire les années et trier
     data = []
     for table_name, table in tables.items():
@@ -424,16 +427,17 @@ def graph(tables,
         except ValueError:
             continue
 
-        # 2. Somme des candidats dans la zone
         total = 0
+        n= 0
         for rec in table:
-            if rec.get(localisation_category) == zone:
+            if rec[localisation_category] == zone:
                 try:
-                    total += int(rec.get(count_category, 0))
-                except (TypeError, ValueError):
+                    total += float(rec[count_category])
+                    n += 1
+                except (TypeError, ValueError) as e:
                     pass
 
-        data.append((annee, total))
+        data.append((annee, total/n if n != 0 else total))
 
     if not data:
         # Pas de données → simple message
@@ -451,7 +455,7 @@ def graph(tables,
     # 5. Tracer
     plt.figure()
     plt.plot(années, totaux, marker="o")
-    plt.title(f"{zone} — Candidatures Parcoursup")
+    plt.title(f"{zone} — {count_category}")
     plt.xlabel("Année")
     plt.ylabel(count_category)
     plt.xticks(années)

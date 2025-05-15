@@ -23,6 +23,7 @@ max_chars = 10
 start_title = ""
 end_title = ""
 start = 0
+cur_duree = 0
 
 def init():
     global cur_iteration
@@ -105,21 +106,25 @@ def animate(*args, char=None, max_char = 100, title="Animation en cours", title_
 def print_anim():
     global cur_iteration
     global cur_pos
+    global cur_dur
 
     duree = time.time()-start
 
     if cur_iteration == total_iterations:
         p = cur_iteration / total_iterations
-        print(f"\r{chara*int(max_chars*p)+ original_chara * (max_chars-int(max_chars*p))} {int(p*100)}%  {end_title} - {int(duree)}s", flush=True)
+        to_write = f"\r{chara*int(max_chars*p)+ original_chara * (max_chars-int(max_chars*p))} {int(p*100)}%  {end_title} - {int(duree)}s"
+        basic = f"\r{chara*int(max_chars*p)+ original_chara * (max_chars-int(max_chars*p))} {int(p*100)}%  {start_title} - {int(duree)}s"
+        print(to_write + ' ' * (len(basic)-len(to_write) if len(basic) - len(to_write) > 0 else 0), flush=True) # Prévient mauvais affichage lorsque le title_start est plus grand que title_end
         return 0
     
     if round(cur_iteration * max_chars / total_iterations) != cur_pos:
         cur_pos += 1
         p = cur_iteration / total_iterations
-        print(f"\r{chara*int(max_chars*p)+ original_chara * (max_chars-int(max_chars*p))} {int(p*100)}%  {start_title} - {int(duree)}s {' '*10}", end="", flush=True) # Recouvrir si changement de texte 
-
+        print(f"\r{chara*int(max_chars*p)+ original_chara * (max_chars-int(max_chars*p))} {int(p*100)}%  {start_title} - {int(duree)}s", end="", flush=True) # Recouvrir si changement de texte 
+    
     cur_iteration += 1
+    cur_dur = duree
 
 if __name__ == "__main__":
-    for i in animate(50000000, char="circle", original_char="dot"):
+    for i in animate(5000, char="circle", original_char="dot", title=f"Création des zones par régions rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr", title_end=f"Création des région terminées"):
         print_anim()

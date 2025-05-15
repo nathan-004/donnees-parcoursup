@@ -131,10 +131,9 @@ def donneesV10(T, categories, valeurs, resultats):
     if resultats == []:
         resultats = list(T[0].keys())
 
-    for el in animate(T, char="block", title=f"Récupération des données {categories} = {valeurs}", title_end=f"Données {categories} = {valeurs} trouvées"):
+    for el in T:
         if any([el[categories[idx]] == valeurs[idx] for idx in range(len(categories))]) or categories == []:
             t.append({res: el[res] for res in resultats})
-        print_anim()
     return t
 
 def jointure(table1, table2, categories, resultats):
@@ -167,7 +166,7 @@ def create_popup(tables, zone_name, zone_part=""):
     popup = folium.Popup(popup_html, max_width=370)
     return popup
 
-def points_to_cards(table, category, size_category, fg:folium.FeatureGroup, min_size=5, max_size=35):
+def points_to_cards(table, category, size_category, fg:folium.FeatureGroup, min_size=5, max_size=35, show=False):
     """
     category:str
         Categorie devant être un str
@@ -178,18 +177,20 @@ def points_to_cards(table, category, size_category, fg:folium.FeatureGroup, min_
     """
 
     table_sort = sort(table, size_category)
-    max_, min_ = float(table_sort[0][size_category]), int(table[-1][size_category])
+    max_, min_ = float(table_sort[0][size_category]), float(table[-1][size_category])
     CUR_CAT = "Département de l’établissement"
-
-    for l in animate(table, title="Placement des points sur la carte", title_end="Points placés", char="block"):
-        print_anim()
+    iterate = animate(table, title="Placement des points sur la carte", title_end="Points placés", char="block") if show else table
+    
+    for l in iterate:
+        if show:
+            print_anim()
         if not "," in l[category]:
             continue 
         x, y = eval(l[category])
         pop = create_popup(tables, l[CUR_CAT], CUR_CAT)
 
         folium.CircleMarker(location=(x, y),
-                            radius=min_size + (int(l[size_category]) * (max_size - min_size) / max_),
+                            radius=min_size + (float(l[size_category]) * (max_size - min_size) / max_),
                             fill=True,
                             popup=pop
                         ).add_to(fg)
@@ -223,12 +224,11 @@ def uniticite(table, category:str, resultats=[]):
     seen = set()
     new_table = []
     
-    for ligne in animate(table):
+    for ligne in table:
         try:
             if ligne[category] not in seen:
                 new_table.append({res: ligne[res] for res in resultats})
                 seen.add(ligne[category])
-            print_anim()
         except:
             print(ligne)
             raise AssertionError
@@ -359,7 +359,7 @@ def get_hex_color(values, zone, max_=None, lowest_color=(255, 255, 0), highest_c
 
     return hex_color
 
-def table_to_zone(table, category, color_category, carte, fg, localisation_category="Coordonnées GPS de la formation", exception_values=["", "Etranger"]):
+def table_to_zone(table, category, color_category, carte, fg, localisation_category="Coordonnées GPS de la formation", exception_values=["", "Etranger"], show=False):
     """
     table:liste
         Table à utiliser
@@ -390,9 +390,12 @@ def table_to_zone(table, category, color_category, carte, fg, localisation_categ
         values[zone] = somme / (idx + 1)
 
     maximum = max(values.values())
-
-    for ligne in localisations:
+    iterate = animate(localisations, char="block", title=f"Répartition des zones {category}", title_end=f"Zones {category} terminées.") if show else localisations
+    
+    for ligne in iterate:
         zone = ligne[category]
+        if show:
+            print_anim()
 
         if zone in exception_values:
             continue
@@ -480,7 +483,7 @@ def creer_index(val_category):
     carte = folium.Map(location=location_start, zoom_start=location_zoom)
     fg = folium.FeatureGroup(name="Régions", control=False).add_to(carte)
 
-    carte = table_to_zone(tables["parcoursup_"+default_year], "Région de l’établissement", val_category, carte, fg)
+    carte = table_to_zone(tables["parcoursup_"+default_year], "Région de l’établissement", val_category, carte, fg, show=True)
 
     folium.LayerControl().add_to(carte)
 
@@ -498,7 +501,8 @@ def creer_region(val_category):
     C = 5  # Constante de coeff maximum dans la fonction filtrer_distance
     A = 0.25  # Taux de décroissance de la courbe
 
-    for line in regions:
+    for line in animate(regions, char="block", title=f"Création des zones par régions", title_end=f"Création des région terminées"):
+        print_anim()
         carte = folium.Map(location=location_start, zoom_start=location_zoom)
         fg = folium.FeatureGroup(name="Régions", control=False).add_to(carte)
 
@@ -517,14 +521,15 @@ def creer_departement(val_category):
     """
     departements = uniticite(tables["parcoursup_" + default_year], "Département de l’établissement", ["Département de l’établissement"]) # Table contenant une ligne pour chaque département 
 
-    for line in departements:
+    for line in animate(departements, char="block", title=f"Création des départements", title_end=f"Zones départementales placées."):
+        print_anim()
         carte = folium.Map(location=location_start, zoom_start=location_zoom)
         fg = folium.FeatureGroup(name="Départements", control=False).add_to(carte)
 
         departement_name = line["Département de l’établissement"]
         departement = filtrer_localisation(tables["parcoursup_" + default_year], ["Département "], [departement_name])
 
-        fg = points_to_cards(departement, "Coordonnées GPS de la formation", val_category, fg)
+        fg = points_to_cards(departement, "Coordonnées GPS de la formation", val_category, fg, show=False)
 
         folium.LayerControl().add_to(carte)
 

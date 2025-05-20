@@ -211,13 +211,15 @@ def filtrer_localisation(table, categories, values):
     
     return donneesV10(table, new_categories, values, [])
 
-def uniticite(table, category:str, resultats=[]):
+def uniticite(table, category:str, resultats=[], integer_categories=[], operations = []):
     """
     Regarde pour chaques éléments pour que chaques valeurs de category n'apparaissent qu'une seule fois
 
-    Pour chaque integer, choix d'addition ou de moyenne
-    Pour un string : 
+    Pour chaque categories dans integer_categories, choix d'addition ou de moyenne
     """
+    if len(operations) != len(integer_categories):
+        raise AssertionError("Nombre d'opérations et de catégories différents")
+    
     if resultats == []:
         resultats = list(table[0].keys())
     

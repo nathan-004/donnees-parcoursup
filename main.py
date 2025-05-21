@@ -211,17 +211,19 @@ def filtrer_localisation(table, categories, values):
     
     return donneesV10(table, new_categories, values, [])
 
-def uniticite(table, category:str, resultats=[], integer_categories=[], operations = []):
+def uniticite(table, category:str, resultats=[], integer_categories=[], operation = "add"):
     """
     Regarde pour chaques éléments pour que chaques valeurs de category n'apparaissent qu'une seule fois
 
-    Pour chaque categories dans integer_categories, choix d'addition ou de moyenne
+    Pour chaque categories dans integer_categories, choix d'addition ou de moyenne dans opérations
     """
     if len(operations) != len(integer_categories):
         raise AssertionError("Nombre d'opérations et de catégories différents")
     
     if resultats == []:
         resultats = list(table[0].keys())
+        
+    donnees = {} # Dictionnaire sous la forme {"Category" : [sum_values Pour chaques catégories dans integer_categories]}
     
     seen = set()
     new_table = []
@@ -231,9 +233,16 @@ def uniticite(table, category:str, resultats=[], integer_categories=[], operatio
             if ligne[category] not in seen:
                 new_table.append({res: ligne[res] for res in resultats})
                 seen.add(ligne[category])
-        except:
+                donnees[ligne[category]] = [float(ligne[val]) for val in integer_categories]
+            else:
+                if ligne[category] in donnees:
+                    donnees[ligne[category]] = [val + float(ligne[integer_categories[idx]]) for idx, val in enumerate(donnees[ligne[category]])]
+        except as e:
             print(ligne)
-            raise AssertionError
+            raise AssertionError(e)
+        
+    # Ajouter les lignes modifiées dans le tableau final
+    
     
     return new_table
 
@@ -540,6 +549,9 @@ def creer_departement(val_category):
 
 # Importer toutes les tables dans /ressources + initialiser les variables
 tables = import_all()
+
+for table in tables:
+    tables[table] = uniticite(tables[table], "Code UAI de l'établissement", resultats=[], )
 
 # Initialiser les catégories
 CATEGORIES = creer_categories(tables)

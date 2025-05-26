@@ -156,8 +156,12 @@ def sort(table, category, reverse=True):
         return table
 
 def create_popup(tables, zone_name, zone_part=""):
+    # Problème avec les villes : Affiche le graphe des départements pour les villes
     in_folder = not (zone_part == search_category("Région ")[0])
-    if zone_name == search_category("département ", CATEGORIES):
+    if zone_name == search_category("Établissement", CATEGORIES)[0]:
+        print("test")
+        popup_html = graph(tables, zone_name, zone_part, in_folder=in_folder)
+    elif zone_name == search_category("département ", CATEGORIES)[0]:
         lien = "cartes/" + zone_name if not in_folder else zone_name
         popup_html = f'{graph(tables, zone_name, zone_part, in_folder=in_folder)}'
     else:
@@ -178,7 +182,7 @@ def points_to_cards(table, category, size_category, fg:folium.FeatureGroup, min_
 
     table_sort = sort(table, size_category)
     max_, min_ = float(table_sort[0][size_category]), float(table[-1][size_category])
-    CUR_CAT = "Département de l’établissement"
+    CUR_CAT = "Établissement"
     iterate = animate(table, title="Placement des points sur la carte", title_end="Points placés", char="block") if show else table
     
     for l in iterate:
@@ -217,13 +221,11 @@ def uniticite(table, category:str, resultats=[], integer_categories=[], operatio
 
     Pour chaque categories dans integer_categories, choix d'addition ou de moyenne dans opérations
     """
-    if len(operations) != len(integer_categories):
-        raise AssertionError("Nombre d'opérations et de catégories différents")
-    
+
     if resultats == []:
         resultats = list(table[0].keys())
         
-    donnees = {} # Dictionnaire sous la forme {"Category" : [sum_values Pour chaques catégories dans integer_categories]}
+    donnees = {} # Dictionnaire sous la forme {"Category" : [(sum_values Pour chaques catégories dans integer_categories, n)]}
     
     seen = set()
     new_table = []
@@ -233,16 +235,24 @@ def uniticite(table, category:str, resultats=[], integer_categories=[], operatio
             if ligne[category] not in seen:
                 new_table.append({res: ligne[res] for res in resultats})
                 seen.add(ligne[category])
-                donnees[ligne[category]] = [float(ligne[val]) for val in integer_categories]
+                donnees[ligne[category]] = [[float(ligne[val]), 1] for val in integer_categories]
             else:
                 if ligne[category] in donnees:
-                    donnees[ligne[category]] = [val + float(ligne[integer_categories[idx]]) for idx, val in enumerate(donnees[ligne[category]])]
-        except as e:
+                    donnees[ligne[category]] = [[val[0] + float(ligne[integer_categories[idx]]), val[1]+1] for idx, val in enumerate(donnees[ligne[category]])]
+        except ValueError:
+            pass
+        except Exception as e:
             print(ligne)
             raise AssertionError(e)
         
     # Ajouter les lignes modifiées dans le tableau final
-    
+    for ligne in new_table:
+        if ligne[category] in donnees:
+            for idx, cat in enumerate(integer_categories):
+                if operation == "moy":
+                    ligne[cat] = donnees[ligne[category]][idx][0] / donnees[ligne[category]][idx][1]
+                else:
+                    ligne[cat] = donnees[ligne[category]][idx][0]
     
     return new_table
 
@@ -546,12 +556,16 @@ def creer_departement(val_category):
 
         carte.save("cartes/"+departement_name+".html")
 
+val_cat = "% d’admis dont filles"
 
 # Importer toutes les tables dans /ressources + initialiser les variables
 tables = import_all()
 
 for table in tables:
-    tables[table] = uniticite(tables[table], "Code UAI de l'établissement", resultats=[], )
+    print(len(tables[table]))
+    tables[table] = uniticite(tables[table], "Code UAI de l'établissement", resultats=[], integer_categories=[val_cat], operation="moy")
+    #tables[table] = donneesV10(tables[table], ["Filière de formation très agrégée"], ["CPGE"], resultats=[])
+    print(len(tables[table]))
 
 # Initialiser les catégories
 CATEGORIES = creer_categories(tables)
@@ -563,8 +577,6 @@ for t_ in tables:  # Compter les catégories
 print(search_category("académie", CATEGORIES))
 
 print("Nombre de lignes trouvées :", len(donneesV10(tables["parcoursup_" + default_year], ["\ufeffSession"], ["2024"], [])))
-
-val_cat = "% d’admis dont filles"
 
 # ETABLISSEMENTS = uniticite(tables["parcoursup_"+default_year], "Code UAI de l'établissement")
 
